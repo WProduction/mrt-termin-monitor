@@ -6,4 +6,6 @@
 # Typen: feat fix docs test refactor chore build
 # Scope optional, klein geschrieben.
 # "!" bzw. "BREAKING CHANGE:" nur bei Änderungen am CSV-Schema.
+# CSV-Schema geändert (FIELDS, CSV-Werte)? -> feat! + SCHEMA_VERSION
+# + docs/datenfelder.md im selben Commit, siehe AGENTS.md.
 # Eine logische Änderung je Commit.

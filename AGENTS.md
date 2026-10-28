@@ -42,6 +42,21 @@ im selben Commit mitcommitten.
 - ruff mit Defaults; pytest mit `--import-mode=importlib`, kein `__init__.py` in
   `tests/`, Testdaten byte-exakt unter `tests/data/`.
 
+## CSV-Schema (einzige öffentliche Schnittstelle)
+
+Schema = `FIELDS` und die CSV-Werte der Mappings in
+`src/mrt_termin_monitor/csv_output.py`. **Änderung an `FIELDS` → `feat!` +
+`schema_version` + Codebook** – im selben Commit:
+
+- Commit-Typ `feat!` mit `BREAKING CHANGE:`-Footer (Major-Version).
+- `SCHEMA_VERSION` um 1 erhöhen.
+- `docs/datenfelder.md` nachziehen (Spalte bzw. Wert mit Bedeutung).
+- `tests/data/golden_run.csv` erst danach neu erzeugen – der Golden-Test schlägt
+  bei jeder Schema-Änderung absichtlich fehl.
+
+Dasselbe gilt für einen neuen, geänderten oder entfernten CSV-Wert (z. B. eine
+neue Untersuchung).
+
 ## Commits
 
 - Conventional Commits 1.0, Englisch, Betreff max. 50 Zeichen, Body-Zeilen max. 72.
