@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: mrt-termin-monitor
+type: software
+authors:
+  - family-names: Radike
+    given-names: Markus
+license: Apache-2.0
+repository-code: "https://github.com/WProduction/mrt-termin-monitor"
+abstract: >-
+  Collects the next publicly visible MRI appointment of Austrian radiology
+  institutes for a study on appointment availability.

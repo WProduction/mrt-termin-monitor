@@ -1,0 +1,9 @@
+
+# <type>(<scope>): <subject>   – Englisch, Imperativ, max. 50 Zeichen
+#
+# Body nach einer Leerzeile: Warum, nicht Was; Zeilen max. 72 Zeichen.
+#
+# Typen: feat fix docs test refactor chore build
+# Scope optional, klein geschrieben.
+# "!" bzw. "BREAKING CHANGE:" nur bei Änderungen am CSV-Schema.
+# Eine logische Änderung je Commit.

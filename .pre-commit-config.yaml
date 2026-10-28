@@ -1,0 +1,52 @@
+# Ohne default_stages liefen die Datei-Hooks auch in der commit-msg-Stage.
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      # Testdaten und CSV sind byte-exakt (.gitattributes -text) und werden nicht umgeschrieben.
+      - id: end-of-file-fixer
+        exclude: ^tests/data/|\.csv$
+      - id: mixed-line-ending
+        exclude: ^tests/data/|\.csv$
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.19.3
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      # ruff aus dem uv-Lock, damit Hook und CI dieselbe Version nutzen.
+      - id: ruff-check
+        name: ruff check
+        language: system
+        entry: uv run --locked ruff check --force-exclude
+        types_or: [python, pyi]
+      - id: ruff-format
+        name: ruff format
+        language: system
+        entry: uv run --locked ruff format --force-exclude
+        types_or: [python, pyi]
+
+      # Public referenziert nie den internen Bereich. Die Muster stehen nur hier und in
+      # .gitignore; beide Dateien sind deshalb ausgenommen, keine weiteren.
+      - id: no-internal-refs
+        name: keine Verweise auf internen Bereich
+        language: pygrep
+        entry: 'mrt-termin-monitor-internal|internal/|_tmp\.md|CLAUDE\.local|docs/research|docs/proposals'
+        exclude: ^(\.gitignore|\.pre-commit-config\.yaml)$
+      - id: forbidden-files
+        name: verbotene Dateinamen
+        language: fail
+        entry: 'Datei darf nicht ins Repo (Arbeitsdatei, lokale Claude-Datei oder Credentials)'
+        files: (_tmp\.md|(^|/)CLAUDE\.local\.md|(^|/)credentials\.yaml)$
+      # SVNR-förmige Werte (10 Ziffern) – ohne Ausnahme für tests/; Testwerte zur Laufzeit zusammensetzen.
+      - id: no-svnr
+        name: keine SVNR-förmigen Ziffernfolgen
+        language: pygrep
+        entry: '\b\d{4}\s?\d{6}\b'
+        files: ^(src|tests|docs)/

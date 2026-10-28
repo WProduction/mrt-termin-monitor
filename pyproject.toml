@@ -1,0 +1,44 @@
+[project]
+name = "mrt-termin-monitor"
+version = "0.1.0"
+description = "Erhebt den nächsten online sichtbaren MRT-Termin österreichischer Radiologie-Institute für eine Studie zur Terminverfügbarkeit."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Markus Radike" }]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+mrt-termin-monitor = "mrt_termin_monitor.cli:main"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# ruff-Defaults bewusst übernommen; Abweichungen nur mit Begründung hier eintragen.
+[tool.ruff]
+
+[tool.pytest.ini_options]
+# importlib-Modus: tests/ braucht kein __init__.py, gleichnamige Testmodule kollidieren nicht.
+addopts = ["--import-mode=importlib"]
+testpaths = ["tests"]
+
+# commit-msg-Prüfung (cz check über pre-commit). Eigenes Schema statt
+# cz_conventional_commits, weil nur diese 7 Typen erlaubt sind und 50/72 gilt:
+# Betreff 1–50 Zeichen, keine Zeile über 72 Zeichen, Body nach Leerzeile.
+[tool.commitizen]
+name = "cz_customize"
+
+[tool.commitizen.customize]
+schema = "<type>(<scope>)!: <subject>"
+schema_pattern = '(?s)(?=[^\n]{1,50}(?:\n|$))(?!.*[^\n]{73})(feat|fix|docs|test|refactor|chore|build)(\([a-z0-9-]+\))?!?: [^\n]+(\n\n.*)?\s*$'
+example = "feat(csv): add wartetage column"
+message_template = "{{change_type}}: {{message}}"
