@@ -1,0 +1,8 @@
+﻿schema_version;lauf_id;lauf_datum;lauf_zeit;abfrage_zeitpunkt;institut_id;institut_name;untersuchung;abrechnung;quelle;naechster_termin;wartetage;status;hinweis
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:16:30+02:00;institut_grossstadt;Röntgeninstitut Großstadt;knie_rechts;kasse;online_abfrage;2026-11-03;9;ok;
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:17:30+02:00;institut_grossstadt;Röntgeninstitut Großstadt;lws;kasse;online_abfrage;;;keine_termine;
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:18:30+02:00;diagnosezentrum_au;Diagnosezentrum Au – Süd;knie_rechts;kombiniert;online_abfrage;2027-01-12;79;ok;
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:19:30+02:00;diagnosezentrum_au;Diagnosezentrum Au – Süd;mr_angio_nieren_km;kombiniert;online_abfrage;;;fehler_parsen;"Antwort ""abgeschnitten""; 2 Einträge
+zweite Zeile"
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:20:30+02:00;praxis_ost;Praxis Ost;knie_rechts;kasse;online_abfrage;;;fehler_weiterleitung;"'=HYPERLINK(""x"")"
+1;2026-10-25_0815;2026-10-25;08:15;2026-10-25T08:21:30+02:00;praxis_ost;Praxis Ost;lws;kasse;online_abfrage;;;nicht_erhoben;'-Zeitüberschreitung
