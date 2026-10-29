@@ -41,6 +41,11 @@ im selben Commit mitcommitten.
 - Kommentare und Docstrings auf Deutsch; sie erklären das Warum.
 - ruff mit Defaults; pytest mit `--import-mode=importlib`, kein `__init__.py` in
   `tests/`, Testdaten byte-exakt unter `tests/data/`.
+- Testdaten für Adapter und Parser sind handgebaute Struktur-Skelette mit
+  Platzhaltern, nie Mitschnitte oder bereinigte Kopien echter Portal-Antworten
+  (Begründung: `tests/data/README.md`). Der Hook `no-portal-captures` lehnt
+  Portal-Hostnamen unter `tests/data/` ab; schlägt er an, wird der Inhalt ersetzt,
+  nicht das Muster gelockert.
 
 ## CSV-Schema (einzige öffentliche Schnittstelle)
 

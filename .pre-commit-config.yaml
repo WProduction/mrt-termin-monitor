@@ -50,3 +50,10 @@ repos:
         language: pygrep
         entry: '\b\d{4}\s?\d{6}\b'
         files: ^(src|tests|docs)/
+      # Testdaten sind handgebaute Skelette, nie Portal-Mitschnitte (Fremdinhalt). Ein
+      # Portal-Hostname verrät eine Kopie; Skelette nutzen Platzhalter wie example.at.
+      - id: no-portal-captures
+        name: keine Portal-Mitschnitte in tests/data
+        language: pygrep
+        entry: 'radiologie\.at|imaging\.at|doctena\.[a-z]+|klinix\.[a-z]+|miranext\.[a-z]+|azs\.at|diagnostikum\.at|radiolog\.at|mein-dok\.at|mr-vorarlberg\.at|dzbaden\.at|diagnose\.team|institut-rachinger\.at|roentgen-wien-nord\.at'
+        files: ^tests/data/
