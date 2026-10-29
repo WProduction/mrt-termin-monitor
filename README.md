@@ -35,8 +35,9 @@ und werden nicht per Config gelockert:
   ein Termin gebucht oder reserviert.
 - **Erkennbar:** jeder Request trägt den User-Agent
   `mrt-termin-monitor/<version> (+<repo-url>; …; contact: <mail>)` mit Kontaktadresse.
-- **Sperren respektiert:** Hosts, deren `robots.txt` automatisierte Abrufe untersagt,
-  stehen in `BLOCKED_HOSTS` und werden nie angefragt. Es gibt keine Umgehung von
+- **Sperren respektiert:** Untersagt ein Institut in seiner `robots.txt`
+  automatisierte Abrufe, stehen alle seine Hosts in `BLOCKED_HOSTS` und werden nie
+  angefragt. Es gibt keine Umgehung von
   Captchas, Rate-Limits oder sonstigen Schutzmaßnahmen. Das einmalige Review von
   `robots.txt` und Nutzungsbedingungen je Institut steht in
   [docs/robots-and-terms.md](docs/robots-and-terms.md).
