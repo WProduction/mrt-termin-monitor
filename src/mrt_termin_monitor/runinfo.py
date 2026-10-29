@@ -8,6 +8,7 @@ einen geschickten Datei Version, Umgebung und Konfigurationsstand ablesen kann.
 import hashlib
 import locale
 import platform
+import ssl
 import sys
 from datetime import datetime
 from importlib.resources import files
@@ -36,6 +37,10 @@ def _sha256(source: Traversable) -> str:
     return hashlib.sha256(source.read_bytes()).hexdigest()
 
 
+def _truststore_state() -> str:
+    return "aktiv" if ssl.SSLContext.__module__.startswith("truststore") else "inaktiv"
+
+
 def header_lines(
     argv: list[str], credentials: Path, sites: Traversable | None = None
 ) -> list[str]:
@@ -59,6 +64,9 @@ def header_lines(
             f"Encoding utf8_mode={sys.flags.utf8_mode}"
             f" preferred={locale.getpreferredencoding(False)}"
         ),
+        # truststore ersetzt ssl.SSLContext beim Injizieren (__main__); scheitert es
+        # dort still, zeigt diese Zeile den Rückfall auf certifi + extra-ca.pem.
+        f"TLS truststore={_truststore_state()}",
         f"sites.yaml sha256={_sha256(sites if sites is not None else sites_file())}",
         f"credentials.yaml {'vorhanden' if credentials.is_file() else 'fehlt'}",
         f"Argumente {argv!r}",
