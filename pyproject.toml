@@ -8,8 +8,11 @@ license-files = ["LICENSE"]
 authors = [{ name = "Markus Radike" }]
 requires-python = ">=3.14"
 dependencies = [
+    "certifi>=2026.10.23",
     "platformdirs>=4.13.7",
     "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "truststore>=0.10.5",
 ]
 
 [project.scripts]
