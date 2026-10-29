@@ -1,0 +1,19 @@
+# Institute der Studie – Package-Data, ändert sich nur mit einem Release.
+#
+# Je Institut ein Block unter seinem Slug (ASCII-snake_case, z. B. dz_stadlau). Der
+# Slug ist der stabile Join-Schlüssel der Zeitreihe (CSV-Spalte institut_id) und
+# wird nach dem ersten Messlauf nie mehr umbenannt.
+#
+#   <slug>:
+#     name: <lesbarer Institutsname>          # CSV-Spalte institut_name
+#     adapter: xrweb|klinix|miranext|doctena|patapp|iris
+#     abrechnung: kasse|kombiniert            # nur ÖGK-Termine; privat wird abgelehnt
+#     timeout_s: <Sekunden>                   # optional, nur für langsame Portale
+#     <adapter>:                              # Standort-Parameter des Portals
+#       ...
+#     untersuchungen:                         # knie_rechts|lws|mr_angio_nieren_km
+#       knie_rechts:
+#         ...                                 # adapter-spezifisch (Code, Muster …)
+#
+# Der Loader (sites.py) prüft alles vor dem ersten Request; ein Fehler hier bricht
+# den Lauf mit Konfigurationsfehler ab, statt Fehlzeilen zu erzeugen.
