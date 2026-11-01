@@ -2,7 +2,6 @@
 """Release-Dateien: was beim Ändern still brechen würde, ohne dass ein Lauf es zeigt."""
 
 import importlib.util
-import re
 import tomllib
 import xml.etree.ElementTree as ET
 import zipfile
@@ -36,14 +35,28 @@ def test_cmd_files_are_ascii() -> None:
         path.read_bytes().decode("ascii")
 
 
-def test_install_checks_requires_python() -> None:
+def test_install_accepts_exactly_the_built_pythons() -> None:
+    # wheels\ hat Binärpakete nur für PYTHONS; jede andere Version scheitert erst
+    # in pip mit einer unverständlichen Meldung.
+    pythons = _build_release().PYTHONS
     requires = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))[
         "project"
     ]["requires-python"]
-    major, minor = re.fullmatch(r">=(\d+)\.(\d+)", requires).groups()
+    assert requires == f">={pythons[0]}"
     install = (RELEASE / "install.cmd").read_text(encoding="ascii")
-    assert f"sys.version_info < ({major}, {minor})" in install
-    assert f"Python {major}.{minor} oder neuer" in install
+    versions = ", ".join(f"({v.replace('.', ', ')})" for v in pythons)
+    assert f"sys.version_info[:2] not in ({versions})" in install
+    assert f"Python {' oder '.join(pythons)} von" in install
+    for v in pythons:
+        assert f'set "PY=py -{v}"' in install
+    assert "py -3 " not in install
+
+
+def test_install_recreates_venv() -> None:
+    # Nach einem Python-Wechsel blieben sonst Binärpakete der alten Version im venv.
+    install = (RELEASE / "install.cmd").read_text(encoding="ascii")
+    remove = install.index('rmdir /s /q "%VENV%"')
+    assert remove < install.index("-m venv")
 
 
 def test_install_refuses_source_archive_before_touching_anything() -> None:
@@ -51,7 +64,7 @@ def test_install_refuses_source_archive_before_touching_anything() -> None:
     # Prüfung muss vor Python-Suche und venv stehen, sonst kommt nur die pip-Meldung.
     install = (RELEASE / "install.cmd").read_text(encoding="ascii")
     check = install.index('if not exist "%~dp0wheels\\" goto :falsches_zip')
-    assert check < install.index("py -3")
+    assert check < install.index('py -3.15 -c "import sys"')
     assert check < install.index("-m venv")
     assert "\n:falsches_zip\n" in install
 

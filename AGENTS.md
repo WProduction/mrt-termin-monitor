@@ -8,7 +8,8 @@ Python ≥ 3.14, src-Layout `src/mrt_termin_monitor/`, Build-Backend hatchling,
 Abhängigkeiten über uv mit committetem `uv.lock`. `requirements.txt` wird aus dem
 Lock generiert und nie von Hand editiert – die Bediener-Laptops installieren mit
 pip, nicht mit uv. Ohne Projektzeile (`--no-emit-project`): das eigene Wheel baut
-`tools/build_release.py` per `uv build`, `pip download` lädt nur die Abhängigkeiten.
+`tools/build_release.py` per `uv build`, `pip wheel` holt die Abhängigkeiten je
+Python-Version aus `PYTHONS` (PyYAML als reines Wheel aus dem Quellpaket).
 Lock einfrieren: keine Tool-Upgrades während der Studie.
 
 ## Einrichtung nach dem Klonen

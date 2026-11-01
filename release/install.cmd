@@ -1,7 +1,8 @@
 @echo off
 rem Installiert mrt-termin-monitor fuer den angemeldeten Benutzer: venv unter
 rem %LOCALAPPDATA%, Pakete offline aus wheels\, Desktop-Verknuepfung auf run.cmd.
-rem Kein Admin, kein PATH-Eingriff. Erneut ausfuehren = Update (pip --upgrade).
+rem Kein Admin, kein PATH-Eingriff. Erneut ausfuehren = Update (venv wird neu
+rem angelegt, Zugangsdaten bleiben).
 rem Texte in ASCII-Umschrift: die Konsole liest .cmd-Dateien in der OEM-Codepage.
 setlocal
 set "APPDIR=%LOCALAPPDATA%\mrt-termin-monitor"
@@ -17,16 +18,27 @@ rem release\, aber ohne Pakete. Vor allem anderen pruefen, damit kein halbes ven
 rem entsteht und statt der pip-Meldung ein verstaendlicher Satz kommt.
 if not exist "%~dp0wheels\" goto :falsches_zip
 
-rem Zuerst der py-Launcher (python.org-Standard), dann python im PATH. Der
-rem WindowsApps-Platzhalter "python" ohne installiertes Python scheitert hier.
+rem Zuerst der py-Launcher (python.org-Standard) mit genau den Versionen, fuer die
+rem wheels\ Pakete hat: "py -3" naehme die neueste, auch eine nicht unterstuetzte.
+rem Dann python im PATH. Der WindowsApps-Platzhalter "python" ohne installiertes
+rem Python scheitert hier.
 set "PY="
-py -3 -c "import sys" >nul 2>&1 && set "PY=py -3"
+py -3.15 -c "import sys" >nul 2>&1 && set "PY=py -3.15"
+if not defined PY (py -3.14 -c "import sys" >nul 2>&1 && set "PY=py -3.14")
 if not defined PY (python -c "import sys" >nul 2>&1 && set "PY=python")
 if not defined PY goto :kein_python
-rem Mindestversion = requires-python in pyproject.toml (Test prueft Gleichheit).
-%PY% -c "import sys; sys.exit(sys.version_info < (3, 14))" || goto :altes_python
+rem Versionen = PYTHONS in tools/build_release.py (Test prueft Gleichheit). Auch
+rem eine zu neue Version landet bei :altes_python (Meldung passt fuer beide).
+%PY% -c "import sys; sys.exit(sys.version_info[:2] not in ((3, 14), (3, 15)))" || goto :altes_python
 
 echo Schritt 1 von 3: Programm wird installiert ...
+rem venv immer neu: unter Windows liegen die Pakete ohne Versionsnummer im Pfad,
+rem nach einem Python-Wechsel blieben Binaerpakete der alten Version liegen und
+rem pip --upgrade ersetzt sie nicht (gleiche Paketversion). Zugangsdaten liegen
+rem ausserhalb des venv. Haelt ein laufender Lauf Dateien fest, bleibt der Ordner
+rem stehen und rmdir hat die Ursache schon gemeldet.
+if exist "%VENV%\" rmdir /s /q "%VENV%"
+if exist "%VENV%\" goto :fehler
 %PY% -m venv "%VENV%" || goto :fehler
 "%PYV%" -m pip install --no-index --find-links "%~dp0wheels" --upgrade --disable-pip-version-check --quiet mrt_termin_monitor || goto :fehler
 "%PYV%" -X utf8 -m mrt_termin_monitor --version || goto :fehler
@@ -62,15 +74,15 @@ exit /b 2
 :kein_python
 echo FEHLER: Python wurde nicht gefunden.
 echo Vermutlich ist Python noch nicht installiert.
-echo Bitte Python 3.14 oder neuer von https://www.python.org/downloads/windows/
+echo Bitte Python 3.14 oder 3.15 von https://www.python.org/downloads/windows/
 echo installieren und install.cmd erneut starten.
 pause
 exit /b 2
 
 :altes_python
-echo FEHLER: Die installierte Python-Version ist zu alt.
+echo FEHLER: Diese Python-Version wird nicht unterstuetzt.
 %PY% --version
-echo Bitte Python 3.14 oder neuer von https://www.python.org/downloads/windows/
+echo Bitte Python 3.14 oder 3.15 von https://www.python.org/downloads/windows/
 echo installieren und install.cmd erneut starten.
 pause
 exit /b 2

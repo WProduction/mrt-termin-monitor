@@ -34,6 +34,12 @@ build-backend = "hatchling.build"
 # ruff-Defaults bewusst übernommen; Abweichungen nur mit Begründung hier eintragen.
 [tool.ruff]
 
+# PyYAML hat kein Wheel für Python 3.15; uv baut es dann aus dem Quellpaket. Ohne
+# C-Teil, damit dafür kein Visual-C++-Compiler nötig ist; das Release-ZIP nimmt
+# für alle Versionen dasselbe reine PyYAML (tools/build_release.py).
+[tool.uv.extra-build-variables]
+pyyaml = { PYYAML_FORCE_LIBYAML = "0" }
+
 [tool.pytest.ini_options]
 # importlib-Modus: tests/ braucht kein __init__.py, gleichnamige Testmodule kollidieren nicht.
 addopts = ["--import-mode=importlib"]
