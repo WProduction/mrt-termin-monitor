@@ -107,6 +107,9 @@ def collect(
         # Anders als bei XR-WEB zählt der Status: ein 503 oder ein 3xx ohne
         # Location kommt oft mit leerem Body – ungeprüft sähe das genau wie
         # „kein Termin“ aus und wäre ein stiller Messfehler über die ganze Studie.
+        # Bewusste Abweichung vom POC, der nur >= 400 abfing: auch 1xx und ein
+        # 3xx ohne Location (der HTTP-Client reicht ihn als finale Antwort durch)
+        # sind keine verwertbare Auskunft und werden deshalb Fehlerzeilen.
         if not 200 <= result.status_code < 300:
             rows.append(
                 row(
