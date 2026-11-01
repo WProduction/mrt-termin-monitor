@@ -17,3 +17,196 @@
 #
 # Der Loader (sites.py) prüft alles vor dem ersten Request; ein Fehler hier bricht
 # den Lauf mit Konfigurationsfehler ab, statt Fehlzeilen zu erzeugen.
+
+# --- XR-WEB (D.A.T.A.): ein GET je Untersuchung auf
+# /AppointmentSearch/directAppointmentSearch?exas=<code>[&Site=<site_param>].
+# day_table_columns ist bei allen live geprüften Mandanten 2 (Vormittag/Nachmittag;
+# die Datumsspalte zählt nicht mit). expected_title wird als Teilstring geprüft und
+# schützt davor, dass ein umbenannter Code still eine andere Untersuchung misst.
+# Host-Schreibweise je Mandant geprüft: radiologie.at-Mandanten nur mit „www.“,
+# imaging.at-Mandanten und xrweb.mr-vorarlberg.at nur ohne.
+
+radiologicum_penzing:
+  name: MR-CT Wien-West / Radiologicum Penzing
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.radiologicum.radiologie.at
+    site_param: p
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mknie re                      # mit Leerzeichen, der Adapter percent-encodet
+      expected_title: MR Kniegelenk       # matcht „… rechts“ und „… links oder rechts“
+
+dz_stadlau:
+  name: DZ Stadlau
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.dzstadlau.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mrknieonline                  # seitenneutraler Sammelcode
+      expected_title: MRT Knie
+
+dz_simmering:
+  name: DZ Simmering
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.dh11.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mrknr
+      expected_title: MR Knie             # voller Titel „MR Knie (links/rechts)“
+
+dz_urania:
+  name: DZ Urania
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: webportal.urania.imaging.at
+    site_param: ur
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mrknieonline                  # seitenneutral
+      expected_title: MRT Knie
+
+imagin_floridsdorf:
+  name: imagin Floridsdorf
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: webportal.floridsdorf.imaging.at
+    site_param: flo
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mrknieonline                  # seitenneutral
+      expected_title: MRT Knie
+
+diagnosehaus_3:
+  name: Diagnosehaus 3
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.dh3.radiologie.at           # antwortet mit 302 auf denselben Host
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mrknr
+      expected_title: MR Knie
+
+hansson_diagnostik:
+  name: Hansson Diagnostik
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.hansson-diagnostik.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: onmrkn                        # seitenneutral, der Katalog kennt kein re/li
+      expected_title: MR Knie
+
+radiologie_waidhofen:
+  name: Radiologie Waidhofen/Ybbs
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.waidhofen.radiologie.at     # nur ein Teil der Termine ist online buchbar
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: knr-mr
+      expected_title: MRT Knie
+
+dz_baden:
+  name: MR DZ Baden
+  adapter: xrweb
+  abrechnung: kombiniert
+  # Bei erschöpftem Pool antwortet der Endpunkt erst nach rund 32 s mit der
+  # Weiterleitungsseite; mit 30 s wäre das „nicht erhoben“ statt „Weiterleitung“.
+  timeout_s: 45
+  xrweb:
+    host: webportal.dzbaden.at
+    site_param: b
+    day_table_columns: 2
+  # Titel und Spaltenzahl sind Annahmen: bisher kam nur die Weiterleitungsseite
+  # zurück. Bei der ersten Antwort mit Tages-Tabelle gegen den Live-Titel prüfen;
+  # weicht er ab, liefert der Block fehler_parsen statt ok.
+  untersuchungen:
+    knie_rechts:
+      code: '2244'                        # gequotet: der Code ist ein String
+      expected_title: MRT Knie
+
+rainer_zwettl:
+  name: Dr. Rainer Diagnostik, Zwettl
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    host: www.rainer.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: sd0050                        # hausinternes Schema sd00xx
+      expected_title: MR-Knie             # mit Bindestrich
+
+suedost_feldbach:
+  name: CT/MR Institut Südost (Feldbach)
+  adapter: xrweb
+  abrechnung: kombiniert
+  xrweb:
+    # Der Server liefert sein Zwischenzertifikat nicht mit; der Abruf braucht
+    # das mitgelieferte extra-ca.pem.
+    host: www.suedost.radiologie.at
+    # Ein Site-Parameter (fe/fu) ändert nur das Branding, die Antwort ist mit
+    # und ohne ihn identisch – deshalb weggelassen.
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: onmrkn                        # einziger Knie-Eintrag, ohne Seite
+      expected_title: MR Knie
+
+mr_ct_klagenfurt:
+  name: MR-CT Diagnose Institut Klagenfurt
+  adapter: xrweb
+  abrechnung: kasse                       # Privat-Track ist eine eigene Rechtsperson
+  xrweb:
+    host: www.mr-ct-klagenfurt.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: onmrk                         # seitenneutral
+      expected_title: MRT Knie
+
+mr_bregenz:
+  name: MR Institut Bregenz
+  adapter: xrweb
+  # Kassen- und Privatpool haben eigene Codes und eigene Termine; erhoben wird
+  # nur der Kassenpool.
+  abrechnung: kasse
+  xrweb:
+    host: xrweb.mr-vorarlberg.at          # die www-Variante hat ein fremdes Zertifikat
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: mknr                          # Kassen-Code rechts
+      expected_title: MRT Knie
+
+mr_feldkirch:
+  name: MR Institut Feldkirch
+  adapter: xrweb
+  abrechnung: kasse                       # Privatgruppe des Katalogs ist leer
+  xrweb:
+    host: www.feldkirch.radiologie.at
+    day_table_columns: 2
+  untersuchungen:
+    knie_rechts:
+      code: onmKnie                       # Binnengroßschreibung wie im Katalog
+      # Der Mandant hängt Lauftext an den Namen; nur der stabile Anfang.
+      expected_title: MRT Knie
