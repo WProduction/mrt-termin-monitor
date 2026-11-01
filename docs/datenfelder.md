@@ -26,7 +26,7 @@ Codebook für die Auswertung. Jeder Lauf schreibt eine Datei
 | 2 | `lauf_id` | Text `JJJJ-MM-TT_HHMM` | nie | Lauf-Start, lokale Zeit | Kennung des Laufs; benennt CSV- und Log-Datei. |
 | 3 | `lauf_datum` | Datum `JJJJ-MM-TT` | nie | Lauf-Start, lokale Zeit | Tag des Laufs; Basis für `wartetage`. |
 | 4 | `lauf_zeit` | Uhrzeit `HH:MM` | nie | Lauf-Start, lokale Zeit | Startzeit des Laufs. |
-| 5 | `abfrage_zeitpunkt` | Text, ISO-8601 mit UTC-Offset (`2026-10-25T08:16:30+02:00`) | nie | Zeitpunkt der Abfrage | Exakter Zeitpunkt der einzelnen Abfrage; eindeutig auch bei Sommerzeit-Umstellung. Excel liest ihn als Text. |
+| 5 | `abfrage_zeitpunkt` | Text, ISO-8601 mit UTC-Offset (`2026-10-25T08:16:30+02:00`) | nie | Zeitpunkt der Abfrage | Zeitpunkt der einzelnen Abfrage, genommen unmittelbar vor dem Request; wegen des Mindestabstands von 10 s zwischen zwei Requests an dasselbe Institut kann er bis zu 10 s vor dem tatsächlichen Request liegen. Eindeutig auch bei Sommerzeit-Umstellung. Excel liest ihn als Text. |
 | 6 | `institut_id` | Text (Kürzel, Kleinbuchstaben und `_`) | nie | `sites.yaml` | Stabiler Schlüssel des Instituts über alle Läufe; ändert sich nie, auch wenn sich der Name ändert. |
 | 7 | `institut_name` | Text | nie | `sites.yaml` | Lesbarer Name des Instituts. |
 | 8 | `untersuchung` | Wert aus Liste [Untersuchung](#untersuchung) | nie | `sites.yaml` | Gemessener Testfall. |
