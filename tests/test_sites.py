@@ -222,6 +222,33 @@ def test_klinix_block_loads(tmp_path: Path) -> None:
     assert site.exams == {Exam.KNEE_RIGHT: {"code": "mknr"}}
 
 
+MIRANEXT = """\
+mn_beispiel:
+  name: Radiologie Beispiel
+  adapter: miranext
+  abrechnung: kasse
+  miranext:
+    portal_id: 3
+    device: MR
+  untersuchungen:
+    knie_rechts:
+      search: Kniegelenk
+      service_name: MR Kniegelenk rechts
+      expected_id: 00000000-0000-4000-8000-aaaaaaaaaa01
+"""
+
+
+def test_miranext_block_loads(tmp_path: Path) -> None:
+    site = _load(tmp_path, MIRANEXT)["mn_beispiel"]
+    assert site.params == {"portal_id": 3, "device": "MR"}
+    assert site.billing is Billing.PUBLIC
+    assert site.exams[Exam.KNEE_RIGHT] == {
+        "search": "Kniegelenk",
+        "service_name": "MR Kniegelenk rechts",
+        "expected_id": "00000000-0000-4000-8000-aaaaaaaaaa01",
+    }
+
+
 @pytest.mark.parametrize(
     ("old", "new", "match"),
     [
@@ -265,3 +292,40 @@ def test_klinix_quoted_numeric_code_loads(tmp_path: Path) -> None:
     text = KLINIX.replace("code: mknr", "code: '2244'")
     site = _load(tmp_path, text)["dz_beispiel"]
     assert site.exams[Exam.KNEE_RIGHT]["code"] == "2244"
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        # Vertippte Schlüssel fielen sonst still weg.
+        ("    device: MR\n", "    device: MR\n    portal: 3\n", "portal"),
+        ("      search: Kniegelenk\n", "      suche: Kniegelenk\n", "suche"),
+        # Der Mandant geht ungequotet in die URL: nur echte Ganzzahlen > 0.
+        ("    portal_id: 3\n", "", "'portal_id'"),
+        ("portal_id: 3", "portal_id: true", "'portal_id'"),
+        ("portal_id: 3", "portal_id: '3'", "'portal_id'"),
+        ("portal_id: 3", "portal_id: 0", "'portal_id'"),
+        ("    device: MR\n", "", "'device'"),
+        ("device: MR", "device: ' '", "'device'"),
+        ("      search: Kniegelenk\n", "", "'search'"),
+        ("search: Kniegelenk", "search: ''", "'search'"),
+        ("      service_name: MR Kniegelenk rechts\n", "", "'service_name'"),
+        ("service_name: MR Kniegelenk rechts", "service_name: ' '", "'service_name'"),
+        (
+            "      expected_id: 00000000-0000-4000-8000-aaaaaaaaaa01\n",
+            "",
+            "expected_id",
+        ),
+        (
+            "expected_id: 00000000-0000-4000-8000-aaaaaaaaaa01",
+            "expected_id: 3",
+            "expected_id",
+        ),
+        # Die Studie misst nur das rechte Knie; der Katalog nennt die Seite im Namen.
+        ("Kniegelenk rechts", "Kniegelenk links", "left side"),
+        ("Kniegelenk rechts", "Kniegelenk LINKS", "left side"),
+    ],
+)
+def test_miranext_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in MIRANEXT
+    _reject(tmp_path, MIRANEXT.replace(old, new), match)

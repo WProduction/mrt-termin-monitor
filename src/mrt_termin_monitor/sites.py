@@ -154,6 +154,8 @@ def _site(slug: object, block: object) -> Site:
         _check_xrweb(slug, params, exams)
     elif adapter == "klinix":
         _check_klinix(slug, params, exams)
+    elif adapter == "miranext":
+        _check_miranext(slug, params, exams)
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -227,6 +229,31 @@ def _check_klinix(
         _only(values, {"code"}, where)
         # String erzwingen: ein ungequoteter Zahlencode wäre sonst ein int.
         _text(values, "code", where)
+
+
+def _check_miranext(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    # Unbekannte Schlüssel ablehnen: ein vertipptes Feld fiele sonst still weg.
+    _only(params, {"portal_id", "device"}, f"{slug}.miranext")
+    # Der Mandant landet ungequotet in der URL. Ein String '3' oder ``true`` (bool
+    # ist in Python ein int) fragte sonst still einen anderen Mandanten ab.
+    portal_id = params.get("portal_id")
+    if isinstance(portal_id, bool) or not isinstance(portal_id, int) or portal_id < 1:
+        raise ConfigError(f"{slug}.miranext: 'portal_id' must be an integer > 0")
+    # Gerätename des Kassengeräts: er trennt Kassen- von Privatpool.
+    _text(params, "device", f"{slug}.miranext")
+    for exam, values in exams.items():
+        where = f"{slug}.untersuchungen.{exam}"
+        _only(values, {"search", "service_name", "expected_id"}, where)
+        _text(values, "search", where)
+        service_name = _text(values, "service_name", where)
+        # Die ID ist nur ein Erwartungswert (Abweichung = Hinweis, kein Fehler),
+        # deshalb kein Formatcheck – aber ein String, damit der Vergleich greift.
+        _text(values, "expected_id", where)
+        # Der Katalog führt die Seite im Klartext; die Studie misst nur rechts.
+        if "links" in service_name.lower():
+            raise ConfigError(f"{where}: service_name must not name the left side")
 
 
 def _only(block: dict[str, Any], allowed: set[str], where: str) -> None:
