@@ -155,7 +155,7 @@ def _site(slug: object, block: object) -> Site:
     elif adapter == "klinix":
         _check_klinix(slug, params, exams)
     elif adapter == "miranext":
-        _check_miranext(slug, params, exams)
+        _check_miranext(slug, params, exams, _BILLING[billing])
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -232,8 +232,16 @@ def _check_klinix(
 
 
 def _check_miranext(
-    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+    slug: str,
+    params: dict[str, Any],
+    exams: dict[str, dict[str, Any]],
+    billing: Billing,
 ) -> None:
+    # Der Adapter fragt fest nur den Kassenpool ab (Privatpool = eigenes Gerät).
+    # ``kombiniert`` ginge sonst ungeprüft als Abrechnungs-Label in die CSV und
+    # behauptete einen gemessenen Pool, der nie abgefragt wurde.
+    if billing is not Billing.PUBLIC:
+        raise ConfigError(f"{slug}: miranext measures only abrechnung 'kasse'")
     # Unbekannte Schlüssel ablehnen: ein vertipptes Feld fiele sonst still weg.
     _only(params, {"portal_id", "device"}, f"{slug}.miranext")
     # Der Mandant landet ungequotet in der URL. Ein String '3' oder ``true`` (bool

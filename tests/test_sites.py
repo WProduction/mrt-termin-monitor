@@ -324,6 +324,8 @@ def test_klinix_quoted_numeric_code_loads(tmp_path: Path) -> None:
         # Die Studie misst nur das rechte Knie; der Katalog nennt die Seite im Namen.
         ("Kniegelenk rechts", "Kniegelenk links", "left side"),
         ("Kniegelenk rechts", "Kniegelenk LINKS", "left side"),
+        # Der Adapter misst nur den Kassenpool; ein anderes Label wäre falsch.
+        ("abrechnung: kasse", "abrechnung: kombiniert", "only abrechnung 'kasse'"),
     ],
 )
 def test_miranext_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
