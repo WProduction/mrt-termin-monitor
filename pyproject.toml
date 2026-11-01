@@ -1,6 +1,6 @@
 [project]
 name = "mrt-termin-monitor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Erhebt den nächsten online sichtbaren MRT-Termin österreichischer Radiologie-Institute für eine Studie zur Terminverfügbarkeit."
 readme = "README.md"
 license = "Apache-2.0"

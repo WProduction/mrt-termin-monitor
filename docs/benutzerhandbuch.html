@@ -136,8 +136,10 @@ Benutzerkonto.
 
 <ol class="steps">
   <li>
-    <strong>ZIP-Datei freigeben und entpacken.</strong> Die heruntergeladene Datei
-    <code>mrt-termin-monitor-0.1.0.zip</code> mit der rechten Maustaste anklicken →
+    <strong>ZIP-Datei freigeben und entpacken.</strong> Auf der Release-Seite steht die
+    richtige Datei unter <em>Assets</em>: <code>mrt-termin-monitor-0.1.1.zip</code> (etwa 5 MB),
+    nicht <em>Source code</em> – dort fehlen die Programmpakete. Die heruntergeladene Datei
+    mit der rechten Maustaste anklicken →
     <em>Eigenschaften</em> → unten das Häkchen <em>Zulassen</em> setzen → <em>OK</em>.
     Danach Rechtsklick → <em>Alle extrahieren</em>. Das Freigeben erspart die
     Windows-Sicherheitswarnungen beim nächsten Schritt.
@@ -163,7 +165,7 @@ Benutzerkonto.
 <pre class="console">Installation mrt-termin-monitor
 
 Schritt 1 von 3: Programm wird installiert ...
-mrt-termin-monitor 0.1.0
+mrt-termin-monitor 0.1.1
 Schritt 2 von 3: Verknuepfung auf dem Desktop wird angelegt ...
 Schritt 3 von 3: Einrichtung ...
 Einrichtung mrt-termin-monitor
@@ -181,6 +183,13 @@ Bei einer Nummer mit falscher Länge kommt <code>Die Nummer muss genau 10 Ziffer
 (Leerzeichen sind erlaubt). Bitte erneut eingeben.</code> – einfach noch einmal tippen.
 Danach kann der entpackte Ordner weg; das Programm braucht ihn nicht mehr.
 </p>
+
+<div class="card warnbox">
+  <h4>„FEHLER: Neben install.cmd fehlt der Ordner "wheels" mit den Programmpaketen.“</h4>
+  Es wurde die falsche Datei heruntergeladen, meist <em>Source code (zip)</em>. Auf der
+  Release-Seite unter <em>Assets</em> die Datei <code>mrt-termin-monitor-0.1.1.zip</code>
+  laden, freigeben, entpacken und <code>install.cmd</code> im entpackten Ordner starten.
+</div>
 
 <div class="card warnbox">
   <h4>„FEHLER: Python wurde nicht gefunden“ oder „Version ist zu alt“</h4>
@@ -372,7 +381,7 @@ Programm schwärzt sie. Die Datei <code>credentials.yaml</code> selbst bitte
 
 <div class="card warnbox">
   <h4>Wohin schicken?</h4>
-  Die Mail-Adresse in den Meldungen des Programms ist in Version 0.1.0 noch ein
+  Die Mail-Adresse in den Meldungen des Programms ist in dieser Version noch ein
   Platzhalter, an den keine Mail ankommt. Bis eine echte Adresse eingetragen ist, die
   Log-Datei an die Person schicken, die das Programm betreut.
 </div>
@@ -552,7 +561,7 @@ dagegen nur die Zahl als „Letztes Ausführungsergebnis“:
 
 </main>
 
-<footer>mrt-termin-monitor 0.1.0 · Stand November 2026</footer>
+<footer>mrt-termin-monitor 0.1.1 · Stand November 2026</footer>
 
 </body>
 </html>

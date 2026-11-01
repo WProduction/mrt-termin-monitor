@@ -6,6 +6,19 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.1.1] – 2026-11-01
+
+### Fixed
+
+- `install.cmd` erkennt das GitHub-Quellcode-Archiv („Source code“) am fehlenden Ordner
+  `wheels` und sagt, welche Datei die richtige ist, statt mit einer pip-Meldung abzubrechen.
+- XR-WEB: Wenn das Portal auf seine „keine Online-Vergabe“-Seite umleitet, erklärt das
+  jetzt die Spalte `hinweis` der CSV, statt leer zu bleiben.
+
+### Changed
+
+- Benutzerhandbuch nennt die richtige Download-Datei und die neue Meldung.
+
 ## [0.1.0] – 2026-11-01
 
 Erste Version für den Studienbetrieb.
@@ -24,5 +37,6 @@ Erste Version für den Studienbetrieb.
   Wochen-Task (Montag 09:00) und `docs/benutzerhandbuch.html`.
 - Projektgerüst: Lizenz, Commit-Hooks, CI.
 
-[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/WProduction/mrt-termin-monitor/releases/tag/v0.1.0
