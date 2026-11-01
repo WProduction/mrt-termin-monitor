@@ -158,13 +158,14 @@ def collect(
 
         drift = ""
         if service.assignment_id != values["expected_id"]:
-            # Kein Fehler: genau dafür wird aufgelöst. Sichtbar machen, damit der
-            # Erwartungswert nachgezogen wird.
+            # Kein Fehler: genau dafür wird aufgelöst. Sichtbar im Hinweis der
+            # CSV-Zeile, damit der Erwartungswert nachgezogen wird; im Log nur DEBUG,
+            # weil die Konsole nur deutsche Sätze aus ``messages`` zeigt.
             drift = (
                 f"service id drift: expected {values['expected_id']},"
                 f" resolved {service.assignment_id} (measured with resolved id)"
             )
-            log.warning("%s: %s", site.slug, drift)
+            log.debug("%s: %s", site.slug, drift)
 
         # --- GET 2: freie Slots der aufgelösten Zuordnung -------------------
         start = date.today()

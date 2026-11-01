@@ -2,6 +2,7 @@
 """Top-Level-Handler: Exception → Exit-Code → deutsche Meldung, Traceback nur im Log."""
 
 import io
+import re
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
@@ -182,3 +183,24 @@ def test_setup_subcommand(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
     assert cli.main(["setup"]) == ExitCode.OK
     assert str(paths.credentials_file()) in capsys.readouterr().out
     assert paths.credentials_file().is_file()
+
+
+def test_console_logs_only_texts_from_messages() -> None:
+    """Auf der Konsole (INFO und höher) erscheinen nur deutsche Sätze aus ``messages``.
+
+    Englische Log-Texte gehören auf DEBUG (nur Datei). Quelltext-Scan statt
+    Laufzeitprobe, weil die betroffenen Pfade (Plattenfehler, Portal-Drift) in
+    Tests nicht alle erreichbar sind – genau dort sind englische Texte bisher
+    durchgerutscht.
+    """
+    src = Path(cli.__file__).parent
+    call = re.compile(
+        r"\blog\.(?:info|warning|error|critical|exception)\((?!\s*messages\.)[^)\n]*\)?"
+    )
+    offenders = [
+        f"{path.relative_to(src).as_posix()}: {m.group(0)}"
+        for path in sorted(src.rglob("*.py"))
+        for m in call.finditer(path.read_text(encoding="utf-8"))
+    ]
+    # run.py setzt diese Zeile selbst aus messages.ZEILE_* zusammen.
+    assert offenders == ["run.py: log.info(line)"]

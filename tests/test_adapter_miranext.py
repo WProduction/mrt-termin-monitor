@@ -219,14 +219,16 @@ def test_no_matching_assignment_is_parse_error_without_slot_get(spy) -> None:
 def test_id_drift_warns_and_measures_with_resolved_id(spy, caplog) -> None:
     expected = "00000000-0000-4000-8000-bbbbbbbbbb99"
     exams = {Exam.KNEE_RIGHT: {**SITE.exams[Exam.KNEE_RIGHT], "expected_id": expected}}
-    with caplog.at_level(logging.WARNING, logger=adapter.__name__):
+    with caplog.at_level(logging.DEBUG, logger=adapter.__name__):
         [m] = adapter.collect(_site(exams=exams), RUN_START)
     assert m.status is Status.OK
     assert "service id drift" in m.note
     assert expected in m.note
     assert ID_MR in m.note
     assert f"%5B%22{ID_MR}%22%5D" in spy.calls[1][0]
-    assert any("service id drift" in r.getMessage() for r in caplog.records)
+    # Nur im Log (DEBUG), nie auf der Konsole (INFO): der Text ist englisch.
+    [record] = [r for r in caplog.records if "service id drift" in r.getMessage()]
+    assert record.levelno == logging.DEBUG
 
 
 def test_drift_note_keeps_the_error_reason(spy) -> None:

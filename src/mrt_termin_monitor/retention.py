@@ -28,8 +28,10 @@ def prune_logs(log_dir: Path, keep: int = KEEP_LOGS) -> list[Path]:
             old.unlink()
         except OSError as exc:
             # Ein Log, das nicht löschbar ist (z. B. im Editor geöffnet), darf den
-            # Lauf nicht abbrechen.
-            log.warning("cannot delete old log %s (%s)", old, exc)
+            # Lauf nicht abbrechen. Nur DEBUG: die Operatorin kann nichts tun, der
+            # nächste Lauf versucht es erneut, und die Konsole zeigt nur deutsche
+            # Sätze aus ``messages``.
+            log.debug("cannot delete old log %s (%s)", old, exc)
         else:
             removed.append(old)
     return removed
