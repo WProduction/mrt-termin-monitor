@@ -31,7 +31,7 @@ Crawl-Regel; nach RFC 9309 darf ein Client dann zugreifen.
 | DZ Meidling | `portal-dzm.diagnostikum.at` | sperrt nur Konto-, Log- und Management-Pfade, die Terminabfrage ist erlaubt (erneut prüfen, siehe Offen); `diagnostikum.at` `Allow: /`, sperrt `/api/`, `/admin/`, `/_next/`, `/private/` | keine AGB; Impressum und Datenschutz ohne Klausel | 2026-09-18 |
 | Radiologie Waidhofen/Ybbs | `www.waidhofen.radiologie.at` | 404; Institutsseite erlaubt alles | Impressum mit Haftungs- und Urheberrechtshinweis, keine Klausel zu automatisierten Abfragen | 2026-07-27 |
 | MR DZ Baden | `webportal.dzbaden.at` | 404; Institutsseite erlaubt alles | Portal ohne eigene Bedingungen; Impressum und Datenschutz ohne Klausel | 2026-09-18 |
-| Dr. Rainer Diagnostik, Zwettl | `www.rainer.radiologie.at` | 404; Institutsseite nicht lesbar (offen) | Impressum: Vervielfältigung der Inhalte nur mit Zustimmung; keine Klausel zu automatisierten Abfragen | 2026-07-27 |
+| Dr. Rainer Diagnostik, Zwettl | `www.rainer.radiologie.at` | 404 (erneut 2026-11-01); Institutsseite `www.diagnose-zentrum-rainer.at` liefert eine leere Datei (keine Regel) | Impressum: Vervielfältigung der Inhalte nur mit Zustimmung; keine Klausel zu automatisierten Abfragen | 2026-11-01 |
 | Dr. Rachinger, Linz | `onlinekalender.institut-rachinger.at` | 404; Institutsseite sperrt nur `/wp-admin/` | keine AGB für das Portal (der verlinkte AGB-Pfad ist ein ungenutzter Vorlagen-Rest, 404); Datenschutzerklärung ohne Klausel | 2026-09-18 |
 | MR-CT DZ Horn | `termin.diagnose.team` | 404; Institutsseite sperrt nur `/wp-admin/` | keine Nutzungsbedingungen; Datenschutz ohne Klausel | 2026-09-18 |
 | Diagnostikum Linz | `portal-dl.diagnostikum.at` | wie DZ Meidling (Portal und `diagnostikum.at`) | keine Nutzungsbedingungen; Impressum nur Firmendaten | 2026-07-27 |
@@ -88,5 +88,4 @@ Vor dem ersten Messlauf nachzuholen:
   `portal-dg.diagnostikum.at`) erneut prüfen: Der Befund in der Tabelle hat kein
   belegtes Prüfdatum.
 - Doctena-AGB klauselweise.
-- `robots.txt` der Institutsseite von Dr. Rainer Diagnostik und das Impressum der
-  Radiologie Doringer.
+- Impressum der Radiologie Doringer.
