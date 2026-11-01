@@ -26,7 +26,7 @@ from mrt_termin_monitor import (
     setup,
 )
 from mrt_termin_monitor.errors import ConfigError, ExitCode, MonitorError
-from mrt_termin_monitor.fetch import http
+from mrt_termin_monitor.fetch import http, post
 from mrt_termin_monitor.redaction import RedactionFilter
 from mrt_termin_monitor.sites import load_sites
 
@@ -88,9 +88,10 @@ def _probe(slugs: list[str]) -> ExitCode:
     for slug in slugs:
         site = sites[slug]
         adapter = importlib.import_module(f"mrt_termin_monitor.adapters.{site.adapter}")
-        before = http.request_count()
+        # GET und POST zählen getrennt; iris und patapp gehen (auch) über POST.
+        before = http.request_count() + post.request_count()
         rows = adapter.collect(site, run_start)
-        requests = http.request_count() - before
+        requests = http.request_count() + post.request_count() - before
         for m in rows:
             row = m.to_row()
             # Über log statt print, damit die Ausgabe durch die Redaction läuft.

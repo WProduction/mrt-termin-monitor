@@ -2,13 +2,16 @@
 """Top-Level-Handler: Exception → Exit-Code → deutsche Meldung, Traceback nur im Log."""
 
 import io
+from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from mrt_termin_monitor import cli, messages, paths
 from mrt_termin_monitor.errors import ExitCode, NoSiteReachableError, OutputError
-from mrt_termin_monitor.fetch import http
+from mrt_termin_monitor.fetch import http, post
+from mrt_termin_monitor.model import Measurement, Status
 
 SVNR = "1234" + "010180"
 
@@ -81,6 +84,42 @@ def test_only_probes_site_via_its_adapter(monkeypatch, capsys) -> None:
         )
     ]
     assert "radiologicum_penzing knie_rechts: ok 2099-08-11" in capsys.readouterr().err
+
+
+def test_probe_counts_get_and_post_requests(monkeypatch, capsys) -> None:
+    write_credentials(f"svnr: '{SVNR}'\n")
+    counts = {"get": 0, "post": 0}
+    monkeypatch.setattr(http, "request_count", lambda: counts["get"])
+    monkeypatch.setattr(post, "request_count", lambda: counts["post"])
+
+    def collect(site, run_start: datetime, *, archive=None) -> list[Measurement]:
+        # Wie iris: ein POST (Session) und mehrere GETs.
+        counts["post"] += 1
+        counts["get"] += 4
+        (exam,) = site.exams
+        return [
+            Measurement(
+                run_start=run_start,
+                queried_at=datetime.now().astimezone(),
+                site_id=site.slug,
+                site_name=site.name,
+                exam=exam,
+                billing=site.billing,
+                status=Status.NO_SLOTS,
+            )
+        ]
+
+    # importlib ist global – nur den Adapter-Import umbiegen, alles andere echt.
+    real_import = cli.importlib.import_module
+
+    def import_module(name: str, *args):
+        if name.startswith("mrt_termin_monitor.adapters."):
+            return SimpleNamespace(collect=collect)
+        return real_import(name, *args)
+
+    monkeypatch.setattr(cli.importlib, "import_module", import_module)
+    assert cli.main(["run", "--only", "dz_stadlau"]) == ExitCode.OK
+    assert "(5 requests for site)" in capsys.readouterr().err
 
 
 def test_run_without_only_is_unexpected_until_orchestration(capsys) -> None:
