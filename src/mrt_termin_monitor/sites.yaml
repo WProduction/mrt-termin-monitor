@@ -277,3 +277,29 @@ doringer_salzburg:
       # Erwartungswert: weicht die aufgelöste ID ab, steht das im Hinweis, gemessen
       # wird mit der aufgelösten.
       expected_id: 4d9ade1e-ece0-5017-a0b5-9ce8814ae193
+
+# --- Doctena: ein GET je Untersuchung auf api.doctena.at/agendaSlot (HAL+JSON),
+# Suchfenster 30 Tage ab Lauf-Tag 00:00. Größere Fenster liefern bei dieser API
+# still eine leere Slot-Liste statt eines Fehlers (120 Tage geprüft); keine_termine
+# heißt hier deshalb „kein Termin innerhalb 30 Tagen“. doctor = Doctena-Kalender
+# des Standorts, reason = Doctena-Besuchsgrund je Untersuchung, beide als Zahl
+# ohne Quotes. Beide Ids vergibt Doctena; sie können bei einer Umkonfiguration
+# driften. Wird der Zugriff abgelehnt (HTTP-Fehler, fremde Antwort), gibt es
+# keinen Ausweichweg: das Institut wird dann nicht gemessen.
+
+ambulatorium_doebling:
+  # Gebucht wird beim Ambulatorium Döbling (Mavie Med Ambulatorien GmbH), nicht
+  # bei der Privatklinik Döbling auf demselben Campus – getrennte Rechtspersonen.
+  name: Ambulatorium Döbling
+  adapter: doctena
+  # Ein Slot-Pool ohne Kassen-/Privat-Auswahl; das Institut rechnet MRT als
+  # Kassenleistung oder Wahlarzt-Tarif ab.
+  abrechnung: kombiniert
+  doctena:
+    doctor: 1779969                       # Kalender „MRT 3 Tesla / Magnetresonanz“
+  untersuchungen:
+    knie_rechts:
+      # Besuchsgrund „MRT Knie“, seitenneutral (die Seite steht erst in der
+      # Zuweisung). Einziger offen buchbarer Knie-Grund: die zuweiser-gebundenen
+      # Varianten liefern immer leere Listen, ein Wechsel ergäbe still keine_termine.
+      reason: 202298
