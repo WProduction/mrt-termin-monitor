@@ -35,8 +35,10 @@ dok_beispiel:
   abrechnung: kasse
   iris:
     base_url: https://iris.example.at/terminbuchung
+    kategorie: MRT
     kalender: M
     ressource: {ressource}
+    horizon_days: 180
   untersuchungen:
     knie_rechts:
       pattern: Knie rechts
@@ -269,6 +271,22 @@ def test_doctena_block_loads_ids_as_int(tmp_path: Path) -> None:
     assert site.billing is Billing.COMBINED
 
 
+# IRIS-Block mit Ein-Zeichen-Ressource, für Ersetzungen.
+IRIS_A = IRIS.format(ressource="A")
+
+
+def test_iris_block_loads_with_all_fields(tmp_path: Path) -> None:
+    site = _load(tmp_path, IRIS_A)["dok_beispiel"]
+    assert site.params == {
+        "base_url": "https://iris.example.at/terminbuchung",
+        "kategorie": "MRT",
+        "kalender": "M",
+        "ressource": "A",
+        "horizon_days": 180,
+    }
+    assert site.exams == {Exam.KNEE_RIGHT: {"pattern": "Knie rechts"}}
+
+
 @pytest.mark.parametrize(
     ("old", "new", "match"),
     [
@@ -376,3 +394,36 @@ def test_miranext_rejects(tmp_path: Path, old: str, new: str, match: str) -> Non
 def test_doctena_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
     assert old in DOCTENA
     _reject(tmp_path, DOCTENA.replace(old, new), match)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        ("    base_url: https://iris.example.at/terminbuchung\n", "", "'base_url'"),
+        ("base_url: https://", "base_url: http://", "https"),
+        ("    kategorie: MRT\n", "", "'kategorie'"),
+        ("kategorie: MRT", "kategorie: ' '", "'kategorie'"),
+        ("    horizon_days: 180\n", "", "horizon_days"),
+        ("horizon_days: 180", "horizon_days: 0", "horizon_days"),
+        ("horizon_days: 180", "horizon_days: true", "horizon_days"),
+        ("horizon_days: 180", "horizon_days: '180'", "horizon_days"),
+        # Vertippter Schlüssel: fiele sonst still weg.
+        ("    kalender: M\n", "    kalender: M\n    ressourcen: A\n", "ressourcen"),
+        (
+            "knie_rechts:\n      pattern: Knie rechts\n",
+            "knie_rechts: {}\n",
+            "'pattern'",
+        ),
+        ("pattern: Knie rechts", "pattern: ' '", "'pattern'"),
+        # Kaputtes Regex fällt im Loader auf, nicht erst als Fehlerzeile.
+        ("pattern: Knie rechts", "pattern: '('", "not a valid regex"),
+        (
+            "      pattern: Knie rechts\n",
+            "      pattern: Knie rechts\n      code: MKNR\n",
+            "code",
+        ),
+    ],
+)
+def test_iris_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in IRIS_A
+    _reject(tmp_path, IRIS_A.replace(old, new), match)

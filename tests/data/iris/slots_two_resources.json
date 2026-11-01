@@ -1,0 +1,6 @@
+[
+  {"Datum": 94302, "Zeit": 25200, "Ressource": "A", "Terminart": "TA2"},
+  {"Datum": 94304, "Zeit": 27000, "Ressource": "A", "Terminart": "TA2"},
+  {"Datum": 94297, "Zeit": 28800, "Ressource": "B", "Terminart": "TA2"},
+  {"Datum": 94298, "Zeit": 30600, "Ressource": "B", "Terminart": "TA2"}
+]

@@ -1,0 +1,7 @@
+[
+  {"ID": "1||MRT", "Modality": "MRT", "Region": "Region A", "Lateralität": "", "Bezeichnung": "Schädel ", "Untersuchung": "U-S", "Terminart": ""},
+  {"ID": "2||MRT", "Modality": "MRT", "Region": "Region B", "Lateralität": "links", "Bezeichnung": "Knie ", "Untersuchung": "U-KNL", "Terminart": ""},
+  {"ID": "3||MRT", "Modality": "MRT", "Region": "Region B", "Lateralität": "rechts", "Bezeichnung": "Knie ", "Untersuchung": "U-KNR", "Terminart": ""},
+  {"ID": "4||MRT", "Modality": "MRT", "Region": "Region B", "Lateralität": "beidseits", "Bezeichnung": "Knie ", "Untersuchung": "U-KNB", "Terminart": ""},
+  {"ID": "9||CT", "Modality": "CT", "Region": "Region B", "Lateralität": "rechts", "Bezeichnung": "Knie ", "Untersuchung": "C-KNR", "Terminart": ""}
+]

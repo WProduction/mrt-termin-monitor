@@ -149,7 +149,7 @@ def _site(slug: object, block: object) -> Site:
             raise ConfigError(f"{slug}.untersuchungen.{exam}: must be a mapping")
 
     if adapter == "iris":
-        _check_iris(slug, params)
+        _check_iris(slug, params, exams)
     elif adapter == "xrweb":
         _check_xrweb(slug, params, exams)
     elif adapter == "klinix":
@@ -180,13 +180,44 @@ def _site(slug: object, block: object) -> Site:
     )
 
 
-def _check_iris(slug: str, params: dict[str, Any]) -> None:
+def _check_iris(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    where = f"{slug}.iris"
+    # Unbekannte Schlüssel ablehnen: ein vertipptes Feld fiele sonst still weg.
+    _only(
+        params,
+        {"base_url", "kalender", "ressource", "kategorie", "horizon_days"},
+        where,
+    )
+    # Über die Session-Route läuft ein Bearer-Token – nie unverschlüsselt.
+    if not _text(params, "base_url", where).startswith("https://"):
+        raise ConfigError(f"{where}: 'base_url' must start with https://")
     # Der Katalog des Portals führt keine Kalender-/Ressourcen-ID – ohne beide gibt
     # es keinen Terminabruf. ``ressource`` darf eine Liste wie ``A,B`` sein (zwei
     # Geräte eines Pools in einem Request, so wie der Portal-Client fragt); der
     # Adapter reicht den String unverändert durch, daher keine Ein-Zeichen-Prüfung.
-    for field in ("kalender", "ressource"):
-        _text(params, field, f"{slug}.iris")
+    # ``kategorie`` ist die Modalität im Katalog (z. B. ``MRT``); Einträge anderer
+    # Modalität mit gleichem Text scheiden damit aus.
+    for field in ("kalender", "ressource", "kategorie"):
+        _text(params, field, where)
+    # Suchhorizont in Tagen ab dem Tag nach dem Lauf; bool ausschließen, weil
+    # ``true`` in Python ein int ist.
+    horizon = params.get("horizon_days")
+    if isinstance(horizon, bool) or not isinstance(horizon, int) or horizon < 1:
+        raise ConfigError(f"{where}: 'horizon_days' must be an integer > 0")
+    for exam, values in exams.items():
+        exam_where = f"{slug}.untersuchungen.{exam}"
+        _only(values, {"pattern"}, exam_where)
+        # Regex auf „Bezeichnung Lateralität“ des Katalogeintrags. Ein kaputtes
+        # Muster soll vor dem ersten Request auffallen, nicht als Fehlerzeile.
+        pattern = _text(values, "pattern", exam_where)
+        try:
+            re.compile(pattern)
+        except re.error as exc:
+            raise ConfigError(
+                f"{exam_where}: 'pattern' is not a valid regex: {exc}"
+            ) from exc
 
 
 def _check_xrweb(
