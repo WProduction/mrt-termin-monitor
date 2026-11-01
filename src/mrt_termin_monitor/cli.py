@@ -10,6 +10,7 @@ Jede Exception endet hier: Konsole bekommt nur den deutschen Drei-Teile-Text aus
 """
 
 import argparse
+import importlib
 import logging
 import sys
 from datetime import datetime
@@ -25,7 +26,9 @@ from mrt_termin_monitor import (
     setup,
 )
 from mrt_termin_monitor.errors import ConfigError, ExitCode, MonitorError
+from mrt_termin_monitor.fetch import http
 from mrt_termin_monitor.redaction import RedactionFilter
+from mrt_termin_monitor.sites import load_sites
 
 log = logging.getLogger(__name__)
 
@@ -64,10 +67,43 @@ def _run(
     creds = setup.load_credentials(credentials)
     redaction.add_secrets(creds.values())
     if args.only:
-        # ponytail: vor sites.yaml/Adaptern (Fahrplan-Schritte 4–10) ist jeder Slug
-        # unbekannt; der Stub ruft dann den Adapter des Slugs auf.
-        raise ConfigError(f"unknown site slug: {args.only[0]}")
+        return _probe(args.only)
     raise NotImplementedError("run without --only arrives with the orchestration")
+
+
+def _probe(slugs: list[str]) -> ExitCode:
+    """Live-Probe: ruft je Slug den Adapter auf und loggt jede Messzeile.
+
+    Ohne Budget, Archiv und CSV – das bringt erst die Orchestrierung. Alle Slugs
+    werden vor dem ersten Request geprüft, damit ein Tippfehler keinen halben
+    Lauf erzeugt.
+    """
+    # Doppelte Slugs nur einmal abfragen – jede Wiederholung wäre Portal-Last.
+    slugs = list(dict.fromkeys(slugs))
+    sites = load_sites()
+    unknown = [slug for slug in slugs if slug not in sites]
+    if unknown:
+        raise ConfigError(f"unknown site slug: {', '.join(unknown)}")
+    run_start = datetime.now().replace(second=0, microsecond=0)
+    for slug in slugs:
+        site = sites[slug]
+        adapter = importlib.import_module(f"mrt_termin_monitor.adapters.{site.adapter}")
+        before = http.request_count()
+        rows = adapter.collect(site, run_start)
+        requests = http.request_count() - before
+        for m in rows:
+            row = m.to_row()
+            # Über log statt print, damit die Ausgabe durch die Redaction läuft.
+            log.info(
+                "%s %s: %s %s (%d requests for site) %s",
+                slug,
+                row["untersuchung"],
+                row["status"],
+                row["naechster_termin"] or "-",
+                requests,
+                row["hinweis"],
+            )
+    return ExitCode.OK
 
 
 def _setup(

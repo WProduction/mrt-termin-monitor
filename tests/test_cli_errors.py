@@ -8,6 +8,7 @@ import pytest
 
 from mrt_termin_monitor import cli, messages, paths
 from mrt_termin_monitor.errors import ExitCode, NoSiteReachableError, OutputError
+from mrt_termin_monitor.fetch import http
 
 SVNR = "1234" + "010180"
 
@@ -48,6 +49,38 @@ def test_unknown_slug_exit_2_and_svnr_redacted(capsys) -> None:
     text = only_log()
     assert "nirgendwo" in text
     assert "Anna Muster" not in capsys.readouterr().err
+
+
+def test_unknown_slug_among_known_stops_before_any_request(monkeypatch) -> None:
+    write_credentials(f"svnr: '{SVNR}'\n")
+    monkeypatch.setattr(http, "get", lambda *a, **kw: pytest.fail("no request"))
+    assert cli.main(["run", "--only", "dz_stadlau,nirgendwo"]) == 2
+    assert "unknown site slug: nirgendwo" in only_log()
+
+
+def test_only_probes_site_via_its_adapter(monkeypatch, capsys) -> None:
+    write_credentials(f"svnr: '{SVNR}'\n")
+    skeleton = (Path(__file__).parent / "data" / "xrweb" / "termine.html").read_bytes()
+    # Der Stub stempelt die echte Uhrzeit; Termine dürfen nicht vor heute liegen.
+    skeleton = skeleton.replace(b"2026", b"2099")
+    urls: list[str] = []
+
+    def fake_get(url: str, **kw) -> http.FetchResult:
+        urls.append(url)
+        return http.FetchResult(url=url, status_code=200, content=skeleton)
+
+    monkeypatch.setattr(http, "get", fake_get)
+    # Titel des Skeletts („MR Kniegelenk rechts“) passt zu radiologicum_penzing.
+    # Doppelt genannt, einmal abgefragt.
+    only = "radiologicum_penzing,radiologicum_penzing"
+    assert cli.main(["run", "--only", only]) == ExitCode.OK
+    assert urls == [
+        (
+            "https://www.radiologicum.radiologie.at/AppointmentSearch/"
+            "directAppointmentSearch?exas=mknie%20re&Site=p"
+        )
+    ]
+    assert "radiologicum_penzing knie_rechts: ok 2099-08-11" in capsys.readouterr().err
 
 
 def test_run_without_only_is_unexpected_until_orchestration(capsys) -> None:
