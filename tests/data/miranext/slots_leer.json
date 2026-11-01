@@ -1,0 +1,13 @@
+[
+  {
+    "schedule": {"id": "00000000-0000-4000-8000-aaaaaaaaaa01"},
+    "slots": [
+      {
+        "date_time_list": [
+          {"on_date": "2099-08-10", "available_time_list": []},
+          {"on_date": "2099-08-11", "available_time_list": []}
+        ]
+      }
+    ]
+  }
+]
