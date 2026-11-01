@@ -89,6 +89,8 @@ def test_only_probes_site_via_its_adapter(monkeypatch, capsys) -> None:
         "OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts):"
         " naechster Termin 2099-08-11"
     ) in err
+    (log_file,) = paths.log_dir().glob("run_*.log")
+    assert err.rstrip().endswith(f"Log-Datei: {log_file}")
 
 
 def test_run_logs_get_and_post_requests_per_site(monkeypatch, capsys) -> None:

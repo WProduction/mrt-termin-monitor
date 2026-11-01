@@ -111,7 +111,10 @@ def test_full_run_writes_csv_and_archive(monkeypatch, portal, capsys) -> None:
         f"Zusammenfassung: {expected} Abfragen - ok {expected}, keine_termine 0" in err
     )
     assert "Ergebnisdatei:" in err
-    assert err.rstrip().endswith("OK: Alle Institute wurden erfasst.")
+    # Urteil, danach der Pfad für „schick mir die Log-Datei“.
+    *_, verdict, log_line = err.rstrip().splitlines()
+    assert verdict == "OK: Alle Institute wurden erfasst."
+    assert log_line == f"Log-Datei: {paths.log_dir() / 'run_2026-11-01_0815.log'}"
     assert "HINWEIS" not in err
 
 

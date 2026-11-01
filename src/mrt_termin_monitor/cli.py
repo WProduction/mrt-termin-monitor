@@ -71,6 +71,11 @@ def _run(
     gaps = execute(args.only, started)
     code = ExitCode.PARTIAL if gaps else ExitCode.OK
     log.info(messages.render(code, log_file, credentials, gaps))
+    # Auch im Erfolgsfall: „schick mir die Log-Datei“ braucht den Pfad. Direkt nach
+    # stderr wie der Pfad der Ergebnisdatei, damit die Redaction ihn nicht verstümmelt.
+    text = messages.LOG_DATEI.format(path=log_file)
+    log.debug("console: %s", text)
+    print(text, file=sys.stderr)
     return code
 
 

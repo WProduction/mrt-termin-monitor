@@ -90,6 +90,7 @@ WARNUNG_KEINE_TERMINE = (
 )
 ZUSAMMENFASSUNG = "Zusammenfassung: {zeilen} Abfragen - {zaehlung}"
 ERGEBNIS_DATEI = "Ergebnisdatei: {path}"
+LOG_DATEI = "Log-Datei: {path}"
 
 # Dialog des Subcommands ``setup`` (einzige Stelle mit Eingaben).
 SETUP_TITEL = "Einrichtung mrt-termin-monitor"
