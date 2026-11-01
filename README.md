@@ -12,9 +12,12 @@ Studie hinaus.
 
 ## Starten
 
-Noch kein Release. Ab Version 0.1.0: ZIP aus den GitHub-Releases entpacken,
+Voraussetzung: Windows mit Python ≥ 3.14 (python.org). ZIP
+`mrt-termin-monitor-<version>.zip` aus den
+[GitHub-Releases](https://github.com/WProduction/mrt-termin-monitor/releases) entpacken,
 `install.cmd` doppelklicken und danach über die Desktop-Verknüpfung starten.
-Die Bedienanleitung liegt dem ZIP bei.
+Die Bedienanleitung [`docs/benutzerhandbuch.html`](docs/benutzerhandbuch.html) liegt dem
+ZIP bei. Release bauen: `uv run python tools/build_release.py`.
 
 ## Responsible use
 

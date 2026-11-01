@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mrt-termin-monitor – Benutzerhandbuch</title>
+<style>
+  :root {
+    --ink: #2b2b33;
+    --muted: #6b6b78;
+    --accent: #3a6ea5;
+    --accent-soft: #eaf1f8;
+    --ok: #2e7d32;
+    --warn: #b26a00;
+    --bad: #c62828;
+    --line: #e3e3ea;
+    --bg: #fafafc;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    font-size: 17px;
+  }
+  header {
+    background: linear-gradient(135deg, #3a6ea5, #274b73);
+    color: #fff;
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 .5rem; font-size: 2rem; font-weight: normal; letter-spacing: .02em; }
+  header p { margin: 0 auto; max-width: 38rem; opacity: .9; }
+  nav { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1.25rem 0; font-size: .95rem; }
+  nav ol { margin: .3rem 0; padding-left: 1.4rem; }
+  main { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 4rem; }
+  h2 {
+    font-size: 1.4rem; font-weight: normal; color: var(--accent);
+    border-bottom: 2px solid var(--accent-soft);
+    padding-bottom: .3rem; margin: 2.8rem 0 1rem;
+  }
+  h3 { font-size: 1.1rem; margin: 1.8rem 0 .6rem; }
+  p { margin: .7rem 0; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1rem 1.25rem; margin: 1.2rem 0;
+  }
+  .card.tip     { border-left: 5px solid var(--accent); }
+  .card.warnbox { border-left: 5px solid var(--warn); background: #fff9f0; }
+  .card.dontbox { border-left: 5px solid var(--bad);  background: #fdf3f3; }
+  .card h4 { margin: 0 0 .4rem; font-size: 1rem; }
+  .tablewrap { overflow-x: auto; margin: 1rem 0; }
+  table {
+    border-collapse: collapse; width: 100%; background: var(--card);
+    font-size: .92rem; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  th, td { border: 1px solid var(--line); padding: .5rem .7rem; text-align: left; vertical-align: top; }
+  th { background: var(--accent-soft); font-weight: 600; }
+  code {
+    font-family: Consolas, "Courier New", monospace; font-size: .88em;
+    background: #f0f0f4; border-radius: 4px; padding: .1em .35em;
+  }
+  pre.console {
+    background: #1e1e1e; color: #e6e6e6; border-radius: 8px;
+    padding: 1rem 1.1rem; overflow-x: auto; font-size: .82rem; line-height: 1.45;
+    font-family: Consolas, "Courier New", monospace; white-space: pre;
+  }
+  pre.console .in { color: #8fd18f; }
+  ol li, ul li { margin: .4rem 0; }
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  .steps li { position: relative; padding-left: 2.6rem; margin: 1rem 0; }
+  .steps li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: .05rem;
+    width: 1.8rem; height: 1.8rem; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: system-ui, sans-serif; font-size: .95rem;
+  }
+  footer {
+    text-align: center; color: var(--muted); font-size: .85rem;
+    padding: 1.5rem; border-top: 1px solid var(--line);
+  }
+  @media (max-width: 600px) { body { font-size: 16px; } header h1 { font-size: 1.5rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>mrt-termin-monitor</h1>
+  <p>Benutzerhandbuch: installieren, starten, und was zu tun ist, wenn etwas nicht klappt.</p>
+</header>
+
+<nav>
+  <strong>Inhalt</strong>
+  <ol>
+    <li><a href="#installieren">Installieren</a></li>
+    <li><a href="#starten">Starten</a></li>
+    <li><a href="#schiefgeht">Wenn etwas schiefgeht</a></li>
+    <li><a href="#log">Log-Datei schicken</a></li>
+    <li><a href="#automatisch">Automatisch starten (optional)</a></li>
+    <li><a href="#update">Neue Version installieren</a></li>
+    <li><a href="#deinstallieren">Deinstallieren</a></li>
+    <li><a href="#nie">Was du bitte nie tun solltest</a></li>
+    <li><a href="#referenz">Referenz</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<p>
+Das Programm schaut bei jedem Start auf den Online-Terminseiten von 24 Radiologie-Instituten
+nach, wann der nächste freie MRT-Termin für das rechte Knie ist – so, wie es eine Patientin
+auch tun würde. Es bucht nie einen Termin. Pro Start entsteht eine Tabelle mit den
+Messwerten.
+</p>
+
+<div class="card tip">
+  <h4>Das Wichtigste in einem Satz</h4>
+  Zum geplanten Messzeitpunkt die Verknüpfung „MRT-Termin-Monitor“ auf dem Desktop
+  doppelklicken, etwa fünf Minuten warten, die letzte Meldung lesen, eine Taste drücken –
+  fertig.
+</div>
+
+<h2 id="installieren">1. Installieren</h2>
+
+<p>
+Voraussetzung ist <strong>Python 3.14 oder neuer</strong> von
+<code>https://www.python.org/downloads/windows/</code> (Standardeinstellungen des
+Installers genügen). Adminrechte braucht die Installation nicht; alles landet im eigenen
+Benutzerkonto.
+</p>
+
+<ol class="steps">
+  <li>
+    <strong>ZIP-Datei freigeben und entpacken.</strong> Die heruntergeladene Datei
+    <code>mrt-termin-monitor-0.1.0.zip</code> mit der rechten Maustaste anklicken →
+    <em>Eigenschaften</em> → unten das Häkchen <em>Zulassen</em> setzen → <em>OK</em>.
+    Danach Rechtsklick → <em>Alle extrahieren</em>. Das Freigeben erspart die
+    Windows-Sicherheitswarnungen beim nächsten Schritt.
+  </li>
+  <li>
+    <strong><code>install.cmd</code> doppelklicken.</strong> Im entpackten Ordner. Erscheint
+    trotzdem eine Warnung („Der Computer wurde durch Windows geschützt“ oder „Der Herausgeber
+    konnte nicht verifiziert werden“), auf <em>Weitere Informationen</em> →
+    <em>Trotzdem ausführen</em> bzw. auf <em>Ausführen</em> klicken. Das Programm ist nicht
+    signiert; die Warnung ist bei solchen Programmen normal.
+  </li>
+  <li>
+    <strong>Sozialversicherungsnummer eingeben.</strong> Die Installation fragt am Ende einmal
+    danach (10 Ziffern, Leerzeichen sind erlaubt). Name und Mobilnummer sind freiwillig – nur
+    <em>Enter</em> drücken lässt sie leer. Die Angaben bleiben auf diesem Computer, im
+    versteckten Ordner <code>%LOCALAPPDATA%\mrt-termin-monitor\credentials.yaml</code>,
+    nie unter <em>Dokumente</em>.
+  </li>
+</ol>
+
+<p>So sieht eine erfolgreiche Installation aus (grün: deine Eingaben):</p>
+
+<pre class="console">Installation mrt-termin-monitor
+
+Schritt 1 von 3: Programm wird installiert ...
+mrt-termin-monitor 0.1.0
+Schritt 2 von 3: Verknuepfung auf dem Desktop wird angelegt ...
+Schritt 3 von 3: Einrichtung ...
+Einrichtung mrt-termin-monitor
+Sozialversicherungsnummer (10 Ziffern): <span class="in">&lt;deine 10 Ziffern&gt;</span>
+Name (optional, Enter = leer lassen): <span class="in">Anna Muster</span>
+Mobilnummer (optional, Enter = leer lassen):
+OK: Gespeichert in C:\Users\Anna\AppData\Local\mrt-termin-monitor\credentials.yaml
+
+OK: Installation abgeschlossen. Gestartet wird ueber die Verknuepfung
+"MRT-Termin-Monitor" auf dem Desktop.
+Drücken Sie eine beliebige Taste . . .</pre>
+
+<p>
+Bei einer Nummer mit falscher Länge kommt <code>Die Nummer muss genau 10 Ziffern haben
+(Leerzeichen sind erlaubt). Bitte erneut eingeben.</code> – einfach noch einmal tippen.
+Danach kann der entpackte Ordner weg; das Programm braucht ihn nicht mehr.
+</p>
+
+<div class="card warnbox">
+  <h4>„FEHLER: Python wurde nicht gefunden“ oder „Version ist zu alt“</h4>
+  Python 3.14 oder neuer von <code>https://www.python.org/downloads/windows/</code>
+  installieren und <code>install.cmd</code> erneut doppelklicken.
+</div>
+
+<h2 id="starten">2. Starten</h2>
+
+<p>
+Doppelklick auf die Verknüpfung <strong>MRT-Termin-Monitor</strong> auf dem Desktop. Ein
+schwarzes Fenster öffnet sich, das Programm fragt nichts und arbeitet die Institute der
+Reihe nach ab. Ein Lauf dauert etwa <strong>fünf Minuten</strong>, weil das Programm
+zwischen zwei Abfragen beim selben Institut absichtlich Pausen macht. Das Fenster bleibt
+am Ende offen, bis eine Taste gedrückt wird.
+</p>
+
+<p>So sieht ein normaler Lauf heute aus (gekürzt):</p>
+
+<pre class="console">Lauf 2026-11-02_0900: 24 Institute werden abgefragt, das dauert einige Minuten.
+OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts): naechster Termin 2026-11-12
+OK            DZ Stadlau (knie_rechts): naechster Termin 2026-11-03
+...
+FEHLER        MR DZ Baden (knie_rechts): fehler_weiterleitung
+FEHLER        CT/MR Institut Südost (Feldbach) (knie_rechts): nicht_erhoben
+...
+FEHLER        Ambulatorium Döbling (knie_rechts): fehler_parsen
+...
+OK            MR-CT DZ Horn (knie_rechts): naechster Termin 2026-11-13
+Zusammenfassung: 24 Abfragen - ok 21, keine_termine 0, fehler_weiterleitung 1, fehler_parsen 1, nicht_erhoben 1
+Ergebnisdatei: C:\Users\Anna\Documents\mrt-termin-monitor\data\2026-11-02_0900.csv
+OK MIT LUECKEN (3): Nicht alle Institute konnten erfasst werden.
+Vermutlich war ein Institut kurz nicht erreichbar oder hat seine Webseite geaendert.
+Nichts zu tun; beim naechsten Lauf wird es erneut versucht.
+Log-Datei: C:\Users\Anna\Documents\mrt-termin-monitor\logs\run_2026-11-02_0900.log
+Drücken Sie eine beliebige Taste . . .</pre>
+
+<div class="card tip">
+  <h4>„OK MIT LUECKEN (3)“ ist derzeit der Normalfall</h4>
+  Drei Institute lassen sich zurzeit dauerhaft nicht messen. Das liegt an den Instituten,
+  nicht am Programm oder am Computer – <strong>es ist nichts zu tun</strong>, auch nicht
+  melden. Das Programm versucht es bei jedem Lauf von selbst wieder:
+  <ul>
+    <li><strong>MR DZ Baden</strong>: Der Online-Terminpool ist erschöpft (Status
+      <code>fehler_weiterleitung</code>), oder die Seite antwortet nicht rechtzeitig (Status
+      <code>nicht_erhoben</code>). Diese Abfrage dauert deshalb spürbar länger.</li>
+    <li><strong>CT/MR Institut Südost (Feldbach)</strong>: Das Sicherheitszertifikat der
+      Webseite ist seit 30.&nbsp;Oktober 2026 abgelaufen; das Programm verbindet sich aus
+      Sicherheitsgründen nicht (Status <code>nicht_erhoben</code>).</li>
+    <li><strong>Ambulatorium Döbling</strong>: Das Buchungssystem antwortet mit einem
+      Serverfehler (Status <code>fehler_parsen</code>).</li>
+  </ul>
+  Erst wenn die Zahl in Klammern <em>größer</em> als 3 ist oder andere Institute als diese
+  drei mit <code>FEHLER</code> erscheinen, lohnt sich ein Blick in Abschnitt 3.
+</div>
+
+<p>Die Zeilen bedeuten:</p>
+<ul>
+  <li><code>OK            DZ Stadlau (knie_rechts): naechster Termin 2026-11-03</code> –
+    Termin gefunden.</li>
+  <li><code>OK            DZ Simmering (knie_rechts): keine Termine</code> – die Seite hat
+    funktioniert, bietet aber keinen Termin an („ausgebucht“).</li>
+  <li><code>FEHLER        MR DZ Baden (knie_rechts): fehler_weiterleitung</code> – dieses
+    Institut konnte nicht gemessen werden; am Ende steht der Status-Wert (Referenz).</li>
+</ul>
+<p>
+Ist alles gut gegangen, lautet die letzte Meldung
+<code>OK: Alle Institute wurden erfasst.</code>
+</p>
+
+<p>
+Liegt der letzte Lauf weniger als einen Tag zurück, steht am Anfang
+<code>HINWEIS: Der letzte Lauf (2026-11-01_0900) ist weniger als 24 Stunden her. Der Lauf
+wird trotzdem durchgefuehrt.</code> – nur zur Information, das Programm misst trotzdem.
+Ein Probelauf zählt dabei wie jeder andere Lauf.
+</p>
+
+<p>
+Abbrechen geht jederzeit mit <em>Strg+C</em> oder durch Schließen des Fensters. Beim
+nächsten Start wird einfach neu gemessen.
+</p>
+
+<h2 id="schiefgeht">3. Wenn etwas schiefgeht</h2>
+
+<p>
+Bei einem Fehler endet der Lauf mit einer Meldung, die mit <code>FEHLER:</code> beginnt.
+Sie hat immer drei Teile: was passiert ist, warum vermutlich, und was zu tun ist; danach
+der Pfad der Log-Datei. Nichts selbst reparieren – die Tabelle unten sagt, was zu tun ist.
+Hilft das nicht: die Log-Datei schicken (Abschnitt 4).
+</p>
+
+<pre class="console">FEHLER: Die Konfiguration konnte nicht gelesen werden.
+Vermutlich fehlt die Datei credentials.yaml, oder die Sozialversicherungsnummer darin fehlt oder hat einen Tippfehler.
+Bitte die Einrichtung erneut starten oder die Datei C:\Users\Anna\AppData\Local\mrt-termin-monitor\credentials.yaml pruefen
+oder die Log-Datei C:\Users\Anna\Documents\mrt-termin-monitor\logs\run_2026-11-02_0900.log
+an 72034176+WProduction@users.noreply.github.com schicken.
+Drücken Sie eine beliebige Taste . . .</pre>
+
+<h3>Alle Meldungen am Ende eines Laufs</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Meldung</th><th>Vermutliche Ursache</th><th>Was tun</th></tr>
+  <tr>
+    <td>OK: Alle Institute wurden erfasst.</td>
+    <td>–</td>
+    <td>–</td>
+  </tr>
+  <tr>
+    <td>OK MIT LUECKEN (3): Nicht alle Institute konnten erfasst werden.</td>
+    <td>Vermutlich war ein Institut kurz nicht erreichbar oder hat seine Webseite geaendert.</td>
+    <td>Nichts zu tun; beim naechsten Lauf wird es erneut versucht.</td>
+  </tr>
+  <tr>
+    <td>FEHLER: Die Konfiguration konnte nicht gelesen werden.</td>
+    <td>Vermutlich fehlt die Datei credentials.yaml, oder die Sozialversicherungsnummer darin
+      fehlt oder hat einen Tippfehler.</td>
+    <td>Bitte die Einrichtung erneut starten oder die Datei &lt;Pfad&gt; pruefen.
+      Einfachster Weg: <code>install.cmd</code> aus dem entpackten Ordner noch einmal
+      starten – oder die Datei <code>credentials.yaml</code> löschen, dann fragt die
+      Verknüpfung beim nächsten Start neu nach der Nummer.</td>
+  </tr>
+  <tr>
+    <td>FEHLER: Kein Institut war erreichbar.</td>
+    <td>Vermutlich besteht gerade keine Internetverbindung.</td>
+    <td>Bitte die Internetverbindung pruefen und das Programm erneut starten</td>
+  </tr>
+  <tr>
+    <td>FEHLER: Die Ergebnis- oder Log-Datei konnte nicht geschrieben werden.</td>
+    <td>Vermutlich ist die Datei gerade in Excel geoeffnet oder der Ordner Dokumente ist
+      nicht beschreibbar.</td>
+    <td>Bitte Excel schliessen und das Programm erneut starten. Kommt die Meldung direkt
+      nach einem anderen Start in derselben Minute: eine Minute warten.</td>
+  </tr>
+  <tr>
+    <td>FEHLER: Im Programm ist ein unerwarteter Fehler aufgetreten.</td>
+    <td>Vermutlich hat sich eine Instituts-Webseite geaendert oder das Programm hat einen
+      Fehler.</td>
+    <td>Bitte das Programm spaeter erneut starten; bleibt es dabei, die Log-Datei
+      schicken.</td>
+  </tr>
+  <tr>
+    <td>ABGEBROCHEN: Der Lauf wurde vorzeitig beendet.</td>
+    <td>Das Programm wurde mit Strg+C oder durch Schliessen des Fensters gestoppt.</td>
+    <td>Das Programm kann jederzeit neu gestartet werden.</td>
+  </tr>
+</table>
+</div>
+
+<h3>Weitere Meldungen während eines Laufs</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Meldung</th><th>Bedeutung</th></tr>
+  <tr>
+    <td>WARNUNG: DZ Stadlau (knie_rechts) meldet keine Termine, beim letzten Lauf
+      (2026-11-01_0900) gab es noch einen. Vermutlich hat das Institut seine Webseite
+      geaendert; bitte die Log-Datei an 72034176+WProduction@users.noreply.github.com
+      schicken, wenn das so bleibt.</td>
+    <td>Ein Institut, das beim letzten Mal einen Termin hatte, zeigt plötzlich keinen. Das
+      kann echt sein („ausgebucht“) oder ein Zeichen, dass die Webseite umgebaut wurde.
+      Erscheint die Warnung beim nächsten Lauf wieder: Log-Datei schicken.</td>
+  </tr>
+  <tr>
+    <td>UEBERSPRUNGEN DZ Urania</td>
+    <td>Sicherheitsstopp: Das Programm hat mehr Abfragen gezählt als vorgesehen und
+      aufgehört; die übrigen Institute wurden nicht mehr abgefragt. Danach folgt
+      „FEHLER: Im Programm ist ein unerwarteter Fehler aufgetreten.“ – bitte die Log-Datei
+      schicken.</td>
+  </tr>
+</table>
+</div>
+
+<h2 id="log">4. Log-Datei schicken</h2>
+
+<p>
+Jeder Lauf schreibt ein Protokoll. Den genauen Pfad nennt die letzte Zeile im Fenster
+(<code>Log-Datei: …</code>). Alle Protokolle liegen im Ordner
+<code>Dokumente\mrt-termin-monitor\logs\run_&lt;lauf_id&gt;.log</code>; das neueste hat
+das jüngste Datum im Namen. Diese Datei als Anhang per Mail schicken, gern mit einem
+Foto des Fensters.
+</p>
+
+<p>
+Die Sozialversicherungsnummer und die anderen Zugangsdaten stehen nie im Protokoll – das
+Programm schwärzt sie. Die Datei <code>credentials.yaml</code> selbst bitte
+<strong>nie</strong> verschicken.
+</p>
+
+<div class="card warnbox">
+  <h4>Wohin schicken?</h4>
+  Die Mail-Adresse in den Meldungen des Programms ist in Version 0.1.0 noch ein
+  Platzhalter, an den keine Mail ankommt. Bis eine echte Adresse eingetragen ist, die
+  Log-Datei an die Person schicken, die das Programm betreut.
+</div>
+
+<p>
+Das Programm hebt die 30 jüngsten Protokolle auf und löscht ältere selbst. Die
+Ergebnistabellen und das Roh-Archiv bleiben dagegen unbegrenzt erhalten.
+</p>
+
+<h2 id="automatisch">5. Automatisch starten (optional)</h2>
+
+<p>
+Statt von Hand kann Windows das Programm <strong>jeden Montag um 09:00 Uhr</strong>
+starten – ohne Fenster, im Hintergrund. Empfohlen ist der Start von Hand, weil nur dann
+die Meldungen sichtbar sind; der automatische Start ist eine Ergänzung.
+</p>
+
+<ol class="steps">
+  <li>Im entpackten Ordner den Unterordner <code>tasks</code> öffnen und
+    <code>register-task.cmd</code> doppelklicken. Es meldet
+    „OK: Das Programm laeuft jetzt jeden Montag um 09:00 Uhr automatisch.“</li>
+  <li>Der Computer muss zu der Zeit eingeschaltet und mit deinem Konto angemeldet sein.
+    War er aus, holt Windows den Lauf beim nächsten Einschalten nach. Im Akkubetrieb läuft
+    er ebenfalls.</li>
+  <li>Ob es geklappt hat, zeigt der Ordner <code>Dokumente\mrt-termin-monitor\data</code>:
+    Dort liegt nach jedem Lauf eine neue Tabelle mit Datum und Uhrzeit im Namen.</li>
+</ol>
+
+<p>
+Wieder abschalten: <code>tasks\unregister-task.cmd</code> doppelklicken. Wer in der
+Windows-Aufgabenplanung nachsieht: Der Eintrag heißt <code>MRT-Termin-Monitor</code>;
+„Letztes Ausführungsergebnis“ <code>0x1</code> bedeutet „OK MIT LUECKEN“ und ist derzeit
+normal (Tabelle in der Referenz).
+</p>
+
+<h2 id="update">6. Neue Version installieren</h2>
+
+<p>
+Die neue ZIP-Datei wie in Abschnitt 1 freigeben und entpacken, dann <code>install.cmd</code>
+doppelklicken. Die Sozialversicherungsnummer wird dabei nicht neu abgefragt, und alle
+bisherigen Ergebnisse bleiben erhalten.
+</p>
+
+<h2 id="deinstallieren">7. Deinstallieren</h2>
+
+<p>
+Im entpackten Ordner <code>uninstall.cmd</code> doppelklicken (wurde der Ordner gelöscht:
+die ZIP-Datei erneut entpacken). Es entfernt das Programm, die Desktop-Verknüpfung und den
+automatischen Start und fragt:
+</p>
+
+<pre class="console">Gespeicherte Sozialversicherungsnummer ebenfalls loeschen? [j/N]</pre>
+
+<p>
+<code>j</code> und Enter löscht auch die Zugangsdaten; nur Enter lässt sie liegen (für eine
+spätere Neuinstallation). Der Ordner <code>Dokumente\mrt-termin-monitor</code> mit allen
+Ergebnissen, Protokollen und dem Roh-Archiv bleibt <strong>immer</strong> unverändert.
+</p>
+
+<h2 id="nie">8. Was du bitte nie tun solltest</h2>
+
+<div class="card dontbox">
+  <ul>
+    <li><strong>Ergebnistabellen nicht mit Excel speichern.</strong> Anschauen per
+      Doppelklick ist in Ordnung – beim Speichern verändert Excel aber unbemerkt das Format.
+      Wer etwas ausprobieren will, arbeitet mit einer Kopie in einem anderen Ordner.</li>
+    <li><strong>Nichts im Ordner <code>raw</code> löschen</strong> – das sind die Belege der
+      Studie, was die Institute zum Messzeitpunkt angezeigt haben.</li>
+    <li><strong>Die Datei <code>credentials.yaml</code> nie verschicken</strong> oder unter
+      <em>Dokumente</em> bzw. in OneDrive ablegen.</li>
+    <li><strong>Keine echten Buchungen anstoßen</strong>, auch nicht zum Testen – die Studie
+      beobachtet nur.</li>
+  </ul>
+</div>
+
+<h2 id="referenz">9. Referenz</h2>
+
+<h3>Wo liegt was?</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Was</th><th>Pfad</th></tr>
+  <tr><td>Programm</td><td><code>%LOCALAPPDATA%\mrt-termin-monitor\venv\</code></td></tr>
+  <tr><td>Zugangsdaten</td><td><code>%LOCALAPPDATA%\mrt-termin-monitor\credentials.yaml</code></td></tr>
+  <tr><td>Ergebnistabellen</td><td><code>Dokumente\mrt-termin-monitor\data\&lt;lauf_id&gt;.csv</code></td></tr>
+  <tr><td>Protokolle</td><td><code>Dokumente\mrt-termin-monitor\logs\run_&lt;lauf_id&gt;.log</code></td></tr>
+  <tr><td>Roh-Archiv</td><td><code>Dokumente\mrt-termin-monitor\raw\&lt;lauf_id&gt;\</code></td></tr>
+</table>
+</div>
+
+<p>
+<code>&lt;lauf_id&gt;</code> ist der Startzeitpunkt, z.&nbsp;B. <code>2026-11-02_0900</code>
+für den 2.&nbsp;November 2026 um 09:00 Uhr. <code>%LOCALAPPDATA%</code> ist ein versteckter
+Ordner; in die Adresszeile des Explorers getippt, öffnet er sich trotzdem.
+<em>Dokumente</em> heißt im Pfad oft <code>Documents</code>; ist er mit OneDrive
+verbunden, liegt er unter <code>OneDrive\Dokumente</code>.
+</p>
+
+<h3>Status-Werte in der Ergebnistabelle</h3>
+
+<p>Jede Zeile der Tabelle ist eine Messung: ein Institut, ein Lauf.</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Status</th><th>Bedeutung</th><th>Zählt als Messwert?</th></tr>
+  <tr><td><code>ok</code></td><td>Termin gefunden; das Datum steht in
+    <code>naechster_termin</code>, die Wartezeit in <code>wartetage</code>.</td><td>Ja.</td></tr>
+  <tr><td><code>keine_termine</code></td><td>Die Seite hat funktioniert, zeigt aber keinen
+    freien Termin – „online derzeit ausgebucht“, nicht „keine Wartezeit“.</td>
+    <td>Ja – als „ausgebucht“.</td></tr>
+  <tr><td><code>fehler_weiterleitung</code></td><td>Die Seite hat auf eine Fehler- oder
+    fremde Seite umgeleitet.</td><td>Nein – Lücke.</td></tr>
+  <tr><td><code>fehler_parsen</code></td><td>Eine Antwort kam, war aber nicht auswertbar
+    (z.&nbsp;B. Webseite umgebaut).</td><td>Nein – Lücke.</td></tr>
+  <tr><td><code>nicht_erhoben</code></td><td>Die Abfrage kam nicht zustande (Seite nicht
+    erreichbar, zu langsam, Zertifikat ungültig).</td><td>Nein – Lücke.</td></tr>
+</table>
+</div>
+
+<p>
+Die Spalte <code>abrechnung</code> sagt, welcher Terminpool gemessen wurde:
+<code>kasse</code> – eigener Pool für Kassenpatienten; <code>kombiniert</code> – Kassen-
+und Privattermine aus einem gemeinsamen Pool. Reine Privattermine werden nie gemessen.
+</p>
+
+<h3>Die 24 Institute</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Institut</th><th>Kürzel in der Tabelle</th><th>Abrechnung</th></tr>
+  <tr><td>MR-CT Wien-West / Radiologicum Penzing</td><td><code>radiologicum_penzing</code></td><td>kombiniert</td></tr>
+  <tr><td>DZ Stadlau</td><td><code>dz_stadlau</code></td><td>kombiniert</td></tr>
+  <tr><td>DZ Simmering</td><td><code>dz_simmering</code></td><td>kombiniert</td></tr>
+  <tr><td>DZ Urania</td><td><code>dz_urania</code></td><td>kombiniert</td></tr>
+  <tr><td>imagin Floridsdorf</td><td><code>imagin_floridsdorf</code></td><td>kombiniert</td></tr>
+  <tr><td>Diagnosehaus 3</td><td><code>diagnosehaus_3</code></td><td>kombiniert</td></tr>
+  <tr><td>Hansson Diagnostik</td><td><code>hansson_diagnostik</code></td><td>kombiniert</td></tr>
+  <tr><td>Radiologie Waidhofen/Ybbs</td><td><code>radiologie_waidhofen</code></td><td>kombiniert</td></tr>
+  <tr><td>MR DZ Baden</td><td><code>dz_baden</code></td><td>kombiniert</td></tr>
+  <tr><td>Dr. Rainer Diagnostik, Zwettl</td><td><code>rainer_zwettl</code></td><td>kombiniert</td></tr>
+  <tr><td>CT/MR Institut Südost (Feldbach)</td><td><code>suedost_feldbach</code></td><td>kombiniert</td></tr>
+  <tr><td>MR-CT Diagnose Institut Klagenfurt</td><td><code>mr_ct_klagenfurt</code></td><td>kasse</td></tr>
+  <tr><td>MR Institut Bregenz</td><td><code>mr_bregenz</code></td><td>kasse</td></tr>
+  <tr><td>MR Institut Feldkirch</td><td><code>mr_feldkirch</code></td><td>kasse</td></tr>
+  <tr><td>DZ Meidling</td><td><code>dz_meidling</code></td><td>kombiniert</td></tr>
+  <tr><td>Diagnostikum Linz</td><td><code>diagnostikum_linz</code></td><td>kombiniert</td></tr>
+  <tr><td>Diagnostikum Graz Süd-West</td><td><code>diagnostikum_graz_suedwest</code></td><td>kombiniert</td></tr>
+  <tr><td>Radiologie Doringer, Salzburg</td><td><code>doringer_salzburg</code></td><td>kasse</td></tr>
+  <tr><td>Ambulatorium Döbling</td><td><code>ambulatorium_doebling</code></td><td>kombiniert</td></tr>
+  <tr><td>Radiologisches Zentrum Kapfenberg</td><td><code>rz_kapfenberg</code></td><td>kombiniert</td></tr>
+  <tr><td>Kompetenzzentrum DOK Schwaz</td><td><code>dok_schwaz</code></td><td>kasse</td></tr>
+  <tr><td>Röntgen Wien Nord</td><td><code>roentgen_wien_nord</code></td><td>kombiniert</td></tr>
+  <tr><td>Dr. Rachinger, Linz</td><td><code>rachinger_linz</code></td><td>kasse</td></tr>
+  <tr><td>MR-CT DZ Horn</td><td><code>mr_ct_horn</code></td><td>kasse</td></tr>
+</table>
+</div>
+
+<h3>Ergebniscodes (für die Aufgabenplanung)</h3>
+
+<p>
+Im Fenster erscheint nie eine Zahl, nur die Meldung. Die Windows-Aufgabenplanung zeigt
+dagegen nur die Zahl als „Letztes Ausführungsergebnis“:
+</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Ergebnis</th><th>Meldung im Fenster beginnt mit</th></tr>
+  <tr><td><code>0x0</code></td><td><code>OK:</code></td></tr>
+  <tr><td><code>0x1</code></td><td><code>OK MIT LUECKEN</code> (derzeit normal)</td></tr>
+  <tr><td><code>0x2</code></td><td><code>FEHLER:</code> Konfiguration</td></tr>
+  <tr><td><code>0x3</code></td><td><code>FEHLER:</code> kein Institut erreichbar</td></tr>
+  <tr><td><code>0x4</code></td><td><code>FEHLER:</code> Datei nicht schreibbar</td></tr>
+  <tr><td><code>0x5</code></td><td><code>FEHLER:</code> unerwarteter Fehler</td></tr>
+  <tr><td><code>0xA</code></td><td><code>ABGEBROCHEN:</code></td></tr>
+</table>
+</div>
+
+</main>
+
+<footer>mrt-termin-monitor 0.1.0 · Stand November 2026</footer>
+
+</body>
+</html>
