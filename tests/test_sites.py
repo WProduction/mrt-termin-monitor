@@ -17,10 +17,16 @@ dz_beispiel:
   abrechnung: kasse
   xrweb:
     host: termine.example.at
+    day_table_columns: 2
   untersuchungen:
     knie_rechts:
       code: MRKNR
+      expected_title: MR Knie
 """
+
+# Inhalt des xrweb-Blocks und der Untersuchung in BLOCK, für Ersetzungen.
+XRWEB = "    host: termine.example.at\n    day_table_columns: 2\n"
+KNIE = "      code: MRKNR\n      expected_title: MR Knie\n"
 
 IRIS = """\
 dok_beispiel:
@@ -58,8 +64,10 @@ def test_valid_block_maps_german_values_to_enums(tmp_path: Path) -> None:
     assert site.name == "Diagnosezentrum Beispiel"
     assert site.adapter == "xrweb"
     assert site.billing is Billing.PUBLIC
-    assert site.params == {"host": "termine.example.at"}
-    assert site.exams == {Exam.KNEE_RIGHT: {"code": "MRKNR"}}
+    assert site.params == {"host": "termine.example.at", "day_table_columns": 2}
+    assert site.exams == {
+        Exam.KNEE_RIGHT: {"code": "MRKNR", "expected_title": "MR Knie"}
+    }
     assert site.timeout_s is None
 
 
@@ -112,10 +120,10 @@ def test_rejects_non_snake_case_slug(tmp_path: Path, slug: str) -> None:
     [
         ("  name: Diagnosezentrum Beispiel\n", "", "'name'"),
         ("name: Diagnosezentrum Beispiel", "name: ' '", "'name'"),
-        ("  xrweb:\n    host: termine.example.at\n", "", "block 'xrweb'"),
-        ("    host: termine.example.at\n", "", "block 'xrweb'"),  # leer = None
-        ("    knie_rechts:\n      code: MRKNR\n", "    {}\n", "untersuchungen"),
-        ("      code: MRKNR\n", "", "untersuchungen.knie_rechts"),
+        (f"  xrweb:\n{XRWEB}", "", "block 'xrweb'"),
+        (XRWEB, "", "block 'xrweb'"),  # leer = None
+        (f"    knie_rechts:\n{KNIE}", "    {}\n", "untersuchungen"),
+        (KNIE, "", "untersuchungen.knie_rechts"),
         ("  abrechnung: kasse\n", "  abrechnung: kasse\n  timeout: 30\n", "timeout"),
     ],
 )
@@ -154,3 +162,40 @@ def test_iris_rejects_empty_or_non_string_resource(tmp_path: Path, value: str) -
 def test_iris_requires_kalender(tmp_path: Path) -> None:
     text = IRIS.format(ressource="A").replace("    kalender: M\n", "")
     _reject(tmp_path, text, "'kalender'")
+
+
+def test_xrweb_site_param_loads(tmp_path: Path) -> None:
+    text = BLOCK.replace(XRWEB, XRWEB + "    site_param: p\n")
+    assert _load(tmp_path, text)["dz_beispiel"].params["site_param"] == "p"
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        ("    host: termine.example.at\n", "", "'host'"),
+        ("host: termine.example.at", "host: https://termine.example.at", "bare"),
+        ("host: termine.example.at", "host: termine.example.at/x", "bare"),
+        ("    day_table_columns: 2\n", "", "day_table_columns"),
+        ("day_table_columns: 2", "day_table_columns: 0", "day_table_columns"),
+        ("day_table_columns: 2", "day_table_columns: true", "day_table_columns"),
+        ("day_table_columns: 2", "day_table_columns: '2'", "day_table_columns"),
+        (XRWEB, XRWEB + "    site_param: ''\n", "'site_param'"),
+        # Vertippter Schlüssel: der Site-Parameter fiele sonst still weg.
+        (XRWEB, XRWEB + "    site_parm: p\n", "site_parm"),
+        (KNIE, KNIE + "      exas: MRKNR\n", "exas"),
+        ("      code: MRKNR\n", "", "'code'"),
+        # Ungequoteter Zahlencode wird int – muss als String gequotet werden.
+        ("code: MRKNR", "code: 2244", "'code'"),
+        ("      expected_title: MR Knie\n", "", "'expected_title'"),
+        ("expected_title: MR Knie", "expected_title: ' '", "'expected_title'"),
+    ],
+)
+def test_xrweb_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in BLOCK
+    _reject(tmp_path, BLOCK.replace(old, new), match)
+
+
+def test_xrweb_quoted_numeric_code_loads(tmp_path: Path) -> None:
+    text = BLOCK.replace("code: MRKNR", "code: '2244'")
+    site = _load(tmp_path, text)["dz_beispiel"]
+    assert site.exams[Exam.KNEE_RIGHT]["code"] == "2244"

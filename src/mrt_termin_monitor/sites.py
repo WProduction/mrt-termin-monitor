@@ -7,7 +7,7 @@ Fehlermeldung soll Slug und Feld nennen. Die Werte von ``abrechnung`` und den
 (``csv_output``) – ein Vokabular für Config und Auswertung.
 
 Die adapter-spezifischen Pflichtfelder prüft der Loader erst, wenn der jeweilige
-Adapter existiert; bis dahin ist nur der iris-Block vollständig festgelegt.
+Adapter existiert; festgelegt sind bisher die Blöcke für iris und xrweb.
 """
 
 import re
@@ -135,8 +135,6 @@ def _site(slug: object, block: object) -> Site:
     params = block.get(adapter)
     if not isinstance(params, dict):
         raise ConfigError(f"{slug}: block {adapter!r} missing or not a mapping")
-    if adapter == "iris":
-        _check_iris(slug, params)
 
     exams = block.get("untersuchungen")
     if not isinstance(exams, dict) or not exams:
@@ -149,6 +147,11 @@ def _site(slug: object, block: object) -> Site:
             )
         if not isinstance(values, dict):
             raise ConfigError(f"{slug}.untersuchungen.{exam}: must be a mapping")
+
+    if adapter == "iris":
+        _check_iris(slug, params)
+    elif adapter == "xrweb":
+        _check_xrweb(slug, params, exams)
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -178,6 +181,37 @@ def _check_iris(slug: str, params: dict[str, Any]) -> None:
     # Adapter reicht den String unverändert durch, daher keine Ein-Zeichen-Prüfung.
     for field in ("kalender", "ressource"):
         _text(params, field, f"{slug}.iris")
+
+
+def _check_xrweb(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    # Unbekannte Schlüssel ablehnen: ein vertipptes ``site_param`` fiele sonst still
+    # weg, und der Mandant ohne Site-Parameter ist womöglich ein anderer Standort.
+    _only(params, {"host", "site_param", "day_table_columns"}, f"{slug}.xrweb")
+    host = _text(params, "host", f"{slug}.xrweb")
+    # Nur der Hostname: der Adapter baut Schema und Pfad selbst.
+    if "/" in host or ":" in host:
+        raise ConfigError(f"{slug}.xrweb: 'host' must be a bare hostname")
+    if "site_param" in params:
+        _text(params, "site_param", f"{slug}.xrweb")
+    # Zahl der Zählspalten der Tages-Tabelle; der Parser prüft sie je Zeile.
+    columns = params.get("day_table_columns")
+    if isinstance(columns, bool) or not isinstance(columns, int) or columns < 1:
+        raise ConfigError(f"{slug}.xrweb: 'day_table_columns' must be an integer > 0")
+    for exam, values in exams.items():
+        where = f"{slug}.untersuchungen.{exam}"
+        _only(values, {"code", "expected_title"}, where)
+        # Strings erzwingen: ein ungequoteter Zahlencode (2244) wäre sonst ein int,
+        # und ``expected_title`` ist der Schutz gegen umbenannte Codes.
+        _text(values, "code", where)
+        _text(values, "expected_title", where)
+
+
+def _only(block: dict[str, Any], allowed: set[str], where: str) -> None:
+    unknown = set(block) - allowed
+    if unknown:
+        raise ConfigError(f"{where}: unknown keys {sorted(map(str, unknown))}")
 
 
 def _text(block: dict[str, Any], field: str, where: str) -> str:
