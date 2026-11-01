@@ -194,6 +194,7 @@ def test_forward_page_final_url_is_redirect_error(monkeypatch) -> None:
     rows = adapter.collect(SITE, RUN_START)
     assert all(m.status is Status.ERROR_REDIRECT for m in rows)
     assert all(m.slot_date is None for m in rows)
+    assert all("no online booking" in m.note for m in rows)
 
 
 def test_budget_exceeded_aborts(monkeypatch) -> None:

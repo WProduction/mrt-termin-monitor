@@ -104,7 +104,9 @@ def collect(
             )
             # Im try: Measurement lehnt z. B. ein Datum vor dem Lauf-Tag ab – auch
             # das ist eine unerwartete Antwort und wird eine Fehlerzeile.
-            rows.append(row(status=parsed.status, slot_date=parsed.slot_date))
+            rows.append(
+                row(status=parsed.status, slot_date=parsed.slot_date, note=parsed.note)
+            )
         except Exception as exc:  # noqa: BLE001
             # Bewusst breit: unbekanntes Markup kann jede Exception auslösen.
             # Fehlerzeile statt Laufabbruch; die Roh-Antwort liegt schon im Archiv.

@@ -18,6 +18,9 @@ from mrt_termin_monitor.model import Status
 # Kennzeichen der „keine Online-Vergabe möglich“-Seite in der finalen URL. Nur der
 # Pfad, weil Query und Host je Mandant variieren.
 _FORWARD_PAGE_MARKER = "/EKOSAppointmentForward/ForwardPage"
+# CSV-Hinweis dazu: die Seite ist kein technischer Fehler, sondern die Absage des
+# Portals („keinen Termin online gefunden, bitte persönlich Kontakt aufnehmen“).
+_FORWARD_PAGE_NOTE = "forward page: portal offers no online booking, asks for contact"
 
 # ID der Tages-Tabelle im gerenderten HTML – auf allen Mandanten gleich, weil
 # serverseitig dieselbe ASP.NET-View rendert.
@@ -31,10 +34,12 @@ _DATE_RE = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
 
 @dataclass(frozen=True)
 class XrWebResult:
-    """Parse-Ergebnis: Status und frühestes Datum mit Zähler > 0 (nur bei ``OK``)."""
+    """Parse-Ergebnis: Status, frühestes Datum mit Zähler > 0 (nur bei ``OK``) und
+    Hinweis für die CSV (bisher nur bei der Weiterleitungsseite gesetzt)."""
 
     status: Status
     slot_date: date | None = None
+    note: str = ""
 
 
 def parse(
@@ -62,7 +67,7 @@ def parse(
     # ein ERROR_PARSE würde den spezifischeren Befund verdecken. Nie als
     # „keine Termine“ werten – das Portal hat schlicht nichts angezeigt.
     if _FORWARD_PAGE_MARKER.lower() in final_url.lower():
-        return XrWebResult(Status.ERROR_REDIRECT)
+        return XrWebResult(Status.ERROR_REDIRECT, note=_FORWARD_PAGE_NOTE)
 
     soup = BeautifulSoup(html, "lxml")
 

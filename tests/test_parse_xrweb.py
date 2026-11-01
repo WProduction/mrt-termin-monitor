@@ -62,6 +62,8 @@ def test_forward_page_is_redirect_error_never_no_slots() -> None:
     result = _parse(_skeleton("weiterleitung.html"), url=url)
     assert result.status is Status.ERROR_REDIRECT
     assert result.slot_date is None
+    # Ohne Hinweis sieht die CSV-Zeile wie ein technischer Fehler aus.
+    assert "no online booking" in result.note
 
 
 def test_forward_page_marker_is_case_insensitive() -> None:
