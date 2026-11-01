@@ -287,6 +287,28 @@ def test_iris_block_loads_with_all_fields(tmp_path: Path) -> None:
     assert site.exams == {Exam.KNEE_RIGHT: {"pattern": "Knie rechts"}}
 
 
+PATAPP = """\
+mr_beispiel:
+  name: MR Institut Beispiel
+  adapter: patapp
+  abrechnung: kasse
+  patapp:
+    service_url: https://termin.example.at/hgsservice/service.asmx
+  untersuchungen:
+    knie_rechts:
+      pattern: Knie
+"""
+
+
+def test_patapp_block_loads(tmp_path: Path) -> None:
+    site = _load(tmp_path, PATAPP)["mr_beispiel"]
+    assert site.adapter == "patapp"
+    assert site.params == {
+        "service_url": "https://termin.example.at/hgsservice/service.asmx"
+    }
+    assert site.exams == {Exam.KNEE_RIGHT: {"pattern": "Knie"}}
+
+
 @pytest.mark.parametrize(
     ("old", "new", "match"),
     [
@@ -427,3 +449,36 @@ def test_doctena_rejects(tmp_path: Path, old: str, new: str, match: str) -> None
 def test_iris_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
     assert old in IRIS_A
     _reject(tmp_path, IRIS_A.replace(old, new), match)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        # Vertippter Schlüssel: der Block wäre sonst leer, nicht falsch.
+        ("service_url:", "url:", "url"),
+        (
+            "service_url: https://termin.example.at/hgsservice/service.asmx",
+            "service_url: ''",
+            "'service_url'",
+        ),
+        ("https://termin.example.at", "http://termin.example.at", "'service_url'"),
+        ("service.asmx", "service.asmx?op=GetShortLongTitles", "'service_url'"),
+        ("service.asmx", "service.asmx#x", "'service_url'"),
+        # Portalseite statt Dienst.
+        ("/hgsservice/service.asmx", "/pat/", "'service_url'"),
+        # Aus einer anderen Config kopierte Felder.
+        ("  untersuchungen:\n", "    modality: MR\n  untersuchungen:\n", "modality"),
+        (
+            "      pattern: Knie\n",
+            "      pattern: Knie\n      exam_patterns: x\n",
+            "exam_patterns",
+        ),
+        ("pattern: Knie", "muster: Knie", "muster"),
+        ("pattern: Knie", "pattern: ' '", "'pattern'"),
+        ("pattern: Knie", "pattern: 1", "'pattern'"),
+        ("pattern: Knie", "pattern: 'Knie('", "not a valid regex"),
+    ],
+)
+def test_patapp_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in PATAPP
+    _reject(tmp_path, PATAPP.replace(old, new), match)

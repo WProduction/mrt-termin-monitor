@@ -14,6 +14,7 @@ import re
 from dataclasses import dataclass
 from importlib.resources.abc import Traversable
 from typing import Any
+from urllib.parse import urlsplit
 
 import yaml
 
@@ -158,6 +159,8 @@ def _site(slug: object, block: object) -> Site:
         _check_miranext(slug, params, exams, _BILLING[billing])
     elif adapter == "doctena":
         _check_doctena(slug, params, exams)
+    elif adapter == "patapp":
+        _check_patapp(slug, params, exams)
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -318,6 +321,41 @@ def _check_doctena(
         value = block.get(field)
         if isinstance(value, bool) or not isinstance(value, int) or value < 1:
             raise ConfigError(f"{where}: {field!r} must be an integer > 0")
+
+
+def _check_patapp(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    # Whitelist: ein vertipptes oder aus einer anderen Config kopiertes Feld
+    # (``modality``, ``exam_patterns``) fällt beim Laden auf, nicht im Lauf.
+    where = f"{slug}.patapp"
+    _only(params, {"service_url"}, where)
+    url = urlsplit(_text(params, "service_url", where))
+    # Nur https (über http wanderte die SVNR im Klartext); ohne Query und
+    # Fragment (der Adapter hängt ``?op=<Name>`` an); Pfad auf ``.asmx``, damit
+    # nicht die Portalseite statt des Dienstes eingetragen wird.
+    if (
+        url.scheme != "https"
+        or not url.hostname
+        or url.query
+        or url.fragment
+        or not url.path.endswith(".asmx")
+    ):
+        raise ConfigError(
+            f"{where}: 'service_url' must be an https URL of the .asmx service"
+            " without query or fragment"
+        )
+    for exam, values in exams.items():
+        where = f"{slug}.untersuchungen.{exam}"
+        _only(values, {"pattern"}, where)
+        pattern = _text(values, "pattern", where)
+        # Ein kaputtes Regex scheitert beim Laden, nicht als Fehlzeile im Lauf.
+        try:
+            re.compile(pattern, re.IGNORECASE)
+        except re.error as exc:
+            raise ConfigError(
+                f"{where}: 'pattern' is not a valid regex: {exc}"
+            ) from exc
 
 
 def _only(block: dict[str, Any], allowed: set[str], where: str) -> None:
