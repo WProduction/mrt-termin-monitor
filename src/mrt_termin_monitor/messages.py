@@ -12,8 +12,9 @@ from pathlib import Path
 
 from mrt_termin_monitor.errors import ExitCode
 
-# ponytail: Platzhalter (empfängt keine Mails) – vor Release 0.1.0 durch eine echte
-# Support-Adresse ersetzen.
+# ponytail: Platzhalter (empfängt keine Mails), für 0.1.0 bewusst belassen. Vor 1.0.0
+# durch eine echte Support-Adresse ersetzen und überall nachziehen, wo die Adresse
+# wörtlich steht (per Suche im Repo).
 KONTAKT_MAIL = "72034176+WProduction@users.noreply.github.com"
 
 

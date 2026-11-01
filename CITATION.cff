@@ -6,6 +6,8 @@ authors:
   - family-names: Radike
     given-names: Markus
 license: Apache-2.0
+version: 0.1.0
+date-released: "2026-11-01"
 repository-code: "https://github.com/WProduction/mrt-termin-monitor"
 abstract: >-
   Collects the next publicly visible MRI appointment of Austrian radiology
