@@ -196,7 +196,10 @@ mr_bregenz:
   untersuchungen:
     knie_rechts:
       code: mknr                          # Kassen-Code rechts
-      expected_title: MRT Knie
+      # Voller Kassen-Titel: „MRT Knie“ träfe als Teilstring auch den Privatpool
+      # („MRT Knie Privat rechts“) – ein auf Privat umgestellter Code fiele sonst
+      # nicht auf.
+      expected_title: MRT Knie rechts
 
 mr_feldkirch:
   name: MR Institut Feldkirch
