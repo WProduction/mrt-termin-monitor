@@ -303,8 +303,15 @@ def _get_following_same_host_redirects(
             return FetchResult(
                 url=current_url, status_code=resp.status_code, content=resp.content
             )
-        next_url = urljoin(current_url, location)
-        if host_of(next_url) != start_host:
+        # Location kommt vom Server: ein kaputter Wert (z. B. „http://[x/“) lässt
+        # urljoin/urlsplit mit ValueError scheitern – als FetchError, damit er wie
+        # jeder andere Abruffehler eine Fehlerzeile wird statt den Lauf zu beenden.
+        try:
+            next_url = urljoin(current_url, location)
+            next_host = host_of(next_url)
+        except ValueError as exc:
+            raise FetchError(f"invalid redirect target {location!r}: {exc}") from exc
+        if next_host != start_host:
             raise CrossHostRedirectError(
                 f"redirect from {current_url} to foreign host refused: {next_url}"
             )

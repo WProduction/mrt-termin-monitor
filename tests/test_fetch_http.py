@@ -179,6 +179,12 @@ def test_cross_host_redirect_is_refused() -> None:
     assert len(sess.calls) == 1  # dem Fremdhost-Redirect wurde nicht gefolgt
 
 
+def test_malformed_redirect_target_is_fetch_error() -> None:
+    sess = FakeSession([FakeResponse(302, location="http://[kaputt/")])
+    with pytest.raises(FetchError, match="invalid redirect target"):
+        get(URL, session=sess, delay=0)
+
+
 def test_redirect_hops_are_bounded() -> None:
     loop = [FakeResponse(302, location="/again") for _ in range(10)]
     with pytest.raises(FetchError):
