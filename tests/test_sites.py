@@ -199,3 +199,69 @@ def test_xrweb_quoted_numeric_code_loads(tmp_path: Path) -> None:
     text = BLOCK.replace("code: MRKNR", "code: '2244'")
     site = _load(tmp_path, text)["dz_beispiel"]
     assert site.exams[Exam.KNEE_RIGHT]["code"] == "2244"
+
+
+KLINIX = """\
+dz_beispiel:
+  name: Diagnosezentrum Beispiel
+  adapter: klinix
+  abrechnung: kombiniert
+  klinix:
+    host: termine.example.at
+  untersuchungen:
+    knie_rechts:
+      code: mknr
+"""
+
+
+def test_klinix_block_loads(tmp_path: Path) -> None:
+    site = _load(tmp_path, KLINIX)["dz_beispiel"]
+    assert site.adapter == "klinix"
+    assert site.billing is Billing.COMBINED
+    assert site.params == {"host": "termine.example.at"}
+    assert site.exams == {Exam.KNEE_RIGHT: {"code": "mknr"}}
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        ("    host: termine.example.at\n", "", "block 'klinix'"),  # leer = None
+        ("host: termine.example.at", "host: ' '", "'host'"),
+        ("host: termine.example.at", "host: https://termine.example.at", "bare"),
+        ("host: termine.example.at", "host: termine.example.at/x", "bare"),
+        ("host: termine.example.at", "host: termine.example.at:443", "bare"),
+        # Mitkopierter Schlüssel aus einer anderen Config-Form fiele sonst still weg.
+        (
+            "    host: termine.example.at\n",
+            "    host: termine.example.at\n    exam_codes: x\n",
+            "exam_codes",
+        ),
+        ("      code: mknr\n", "      {}\n", "'code'"),
+        ("      code: mknr\n", "      exas: mknr\n", "exas"),
+        # Ungequoteter Zahlencode wird int – muss als String gequotet werden.
+        ("code: mknr", "code: 2244", "'code'"),
+        ("code: mknr", "code: ' '", "'code'"),
+        # Kein Titel-Schutz bei klinix: das Feld darf nicht so tun, als gäbe es ihn.
+        (
+            "      code: mknr\n",
+            "      code: mknr\n      expected_title: MR Knie\n",
+            "expected_title",
+        ),
+    ],
+)
+def test_klinix_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in KLINIX
+    _reject(tmp_path, KLINIX.replace(old, new), match)
+
+
+def test_klinix_requires_host(tmp_path: Path) -> None:
+    text = KLINIX.replace("    host: termine.example.at\n", "    other: x\n")
+    _reject(tmp_path, text, "other")
+    text = KLINIX.replace("    host: termine.example.at\n", "    {}\n")
+    _reject(tmp_path, text, "'host'")
+
+
+def test_klinix_quoted_numeric_code_loads(tmp_path: Path) -> None:
+    text = KLINIX.replace("code: mknr", "code: '2244'")
+    site = _load(tmp_path, text)["dz_beispiel"]
+    assert site.exams[Exam.KNEE_RIGHT]["code"] == "2244"

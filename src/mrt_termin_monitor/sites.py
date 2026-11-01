@@ -152,6 +152,8 @@ def _site(slug: object, block: object) -> Site:
         _check_iris(slug, params)
     elif adapter == "xrweb":
         _check_xrweb(slug, params, exams)
+    elif adapter == "klinix":
+        _check_klinix(slug, params, exams)
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -206,6 +208,25 @@ def _check_xrweb(
         # und ``expected_title`` ist der Schutz gegen umbenannte Codes.
         _text(values, "code", where)
         _text(values, "expected_title", where)
+
+
+def _check_klinix(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    # Unbekannte Schlüssel ablehnen: ein mitkopiertes Feld aus einer anderen
+    # Config-Form fiele sonst still weg.
+    _only(params, {"host"}, f"{slug}.klinix")
+    host = _text(params, "host", f"{slug}.klinix")
+    # Nur der Hostname: der Adapter baut Schema und Pfad selbst.
+    if "/" in host or ":" in host:
+        raise ConfigError(f"{slug}.klinix: 'host' must be a bare hostname")
+    for exam, values in exams.items():
+        where = f"{slug}.untersuchungen.{exam}"
+        # Nur ``code``: die Route liefert keinen Titel, ein ``expected_title`` hier
+        # täte so, als gäbe es einen Schutz gegen umbenannte Codes, den es nicht gibt.
+        _only(values, {"code"}, where)
+        # String erzwingen: ein ungequoteter Zahlencode wäre sonst ein int.
+        _text(values, "code", where)
 
 
 def _only(block: dict[str, Any], allowed: set[str], where: str) -> None:
