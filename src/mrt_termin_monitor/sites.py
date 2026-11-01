@@ -6,8 +6,8 @@ Fehlermeldung soll Slug und Feld nennen. Die Werte von ``abrechnung`` und den
 ``untersuchungen``-Schlüsseln sind dieselben deutschen Werte wie in der CSV
 (``csv_output``) – ein Vokabular für Config und Auswertung.
 
-Die adapter-spezifischen Pflichtfelder prüft der Loader erst, wenn der jeweilige
-Adapter existiert; festgelegt sind bisher die Blöcke für iris und xrweb.
+Die adapter-spezifischen Pflichtfelder prüft je Adapter eine eigene
+``_check_<adapter>``-Funktion; sie entsteht zusammen mit dem Adapter.
 """
 
 import re
