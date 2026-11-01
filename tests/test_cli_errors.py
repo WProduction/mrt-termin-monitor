@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from mrt_termin_monitor import cli, messages, paths
+from mrt_termin_monitor import cli, messages, paths, run
 from mrt_termin_monitor.errors import ExitCode, NoSiteReachableError, OutputError
 from mrt_termin_monitor.fetch import http, post
 from mrt_termin_monitor.model import Measurement, Status
@@ -83,10 +83,14 @@ def test_only_probes_site_via_its_adapter(monkeypatch, capsys) -> None:
             "directAppointmentSearch?exas=mknie%20re&Site=p"
         )
     ]
-    assert "radiologicum_penzing knie_rechts: ok 2099-08-11" in capsys.readouterr().err
+    err = capsys.readouterr().err
+    assert (
+        "OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts):"
+        " naechster Termin 2099-08-11"
+    ) in err
 
 
-def test_probe_counts_get_and_post_requests(monkeypatch, capsys) -> None:
+def test_run_logs_get_and_post_requests_per_site(monkeypatch, capsys) -> None:
     write_credentials(f"svnr: '{SVNR}'\n")
     counts = {"get": 0, "post": 0}
     monkeypatch.setattr(http, "request_count", lambda: counts["get"])
@@ -110,23 +114,16 @@ def test_probe_counts_get_and_post_requests(monkeypatch, capsys) -> None:
         ]
 
     # importlib ist global – nur den Adapter-Import umbiegen, alles andere echt.
-    real_import = cli.importlib.import_module
+    real_import = run.importlib.import_module
 
     def import_module(name: str, *args):
         if name.startswith("mrt_termin_monitor.adapters."):
-            return SimpleNamespace(collect=collect)
+            return SimpleNamespace(task_count=lambda site: 5, collect=collect)
         return real_import(name, *args)
 
-    monkeypatch.setattr(cli.importlib, "import_module", import_module)
+    monkeypatch.setattr(run.importlib, "import_module", import_module)
     assert cli.main(["run", "--only", "dz_stadlau"]) == ExitCode.OK
-    assert "(5 requests for site)" in capsys.readouterr().err
-
-
-def test_run_without_only_is_unexpected_until_orchestration(capsys) -> None:
-    write_credentials(f"svnr: '{SVNR}'\n")
-    assert cli.main(["run"]) == ExitCode.UNEXPECTED
-    assert "Traceback" not in capsys.readouterr().err
-    assert "NotImplementedError" in only_log()
+    assert "dz_stadlau: 5 requests" in only_log()
 
 
 @pytest.mark.parametrize(

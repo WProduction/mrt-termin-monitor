@@ -70,6 +70,27 @@ MESSAGES: dict[ExitCode, Message] = {
     ),
 }
 
+# Ausgabe während eines Laufs. Die Statuswörter am Zeilenanfang sind gleich breit,
+# damit die Institutsnamen in der Konsole untereinander stehen.
+LAUF_START = (
+    "Lauf {lauf_id}: {anzahl} Institute werden abgefragt, das dauert einige Minuten."
+)
+LAUF_24H = (
+    "HINWEIS: Der letzte Lauf ({letzter}) ist weniger als 24 Stunden her."
+    " Der Lauf wird trotzdem durchgefuehrt."
+)
+ZEILE_TERMIN = "OK            {name} ({untersuchung}): naechster Termin {termin}"
+ZEILE_KEINE = "OK            {name} ({untersuchung}): keine Termine"
+ZEILE_FEHLER = "FEHLER        {name} ({untersuchung}): {status}"
+ZEILE_UEBERSPRUNGEN = "UEBERSPRUNGEN {name}"
+WARNUNG_KEINE_TERMINE = (
+    "WARNUNG: {name} ({untersuchung}) meldet keine Termine, beim letzten Lauf"
+    " ({letzter}) gab es noch einen. Vermutlich hat das Institut seine Webseite"
+    " geaendert; bitte die Log-Datei an {kontakt} schicken, wenn das so bleibt."
+)
+ZUSAMMENFASSUNG = "Zusammenfassung: {zeilen} Abfragen - {zaehlung}"
+ERGEBNIS_DATEI = "Ergebnisdatei: {path}"
+
 # Dialog des Subcommands ``setup`` (einzige Stelle mit Eingaben).
 SETUP_TITEL = "Einrichtung mrt-termin-monitor"
 SETUP_SVNR = "Sozialversicherungsnummer (10 Ziffern): "

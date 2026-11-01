@@ -17,13 +17,16 @@ from pathlib import Path
 
 from mrt_termin_monitor import __version__
 
+# Format der Lauf-Kennung; ``datetime.strptime`` damit ist die Umkehrung von ``lauf_id``.
+LAUF_ID_FORMAT = "%Y-%m-%d_%H%M"
+
 
 def lauf_id(start: datetime) -> str:
     """Kennung eines Laufs aus seiner lokalen Startzeit, z. B. ``2026-10-25_0815``.
 
     Benennt Log- und CSV-Datei; die Namen sortieren damit chronologisch.
     """
-    return start.strftime("%Y-%m-%d_%H%M")
+    return start.strftime(LAUF_ID_FORMAT)
 
 
 def sites_file() -> Traversable:

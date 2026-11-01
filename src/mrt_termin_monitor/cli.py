@@ -10,7 +10,6 @@ Jede Exception endet hier: Konsole bekommt nur den deutschen Drei-Teile-Text aus
 """
 
 import argparse
-import importlib
 import logging
 import sys
 from datetime import datetime
@@ -25,10 +24,9 @@ from mrt_termin_monitor import (
     runinfo,
     setup,
 )
-from mrt_termin_monitor.errors import ConfigError, ExitCode, MonitorError
-from mrt_termin_monitor.fetch import http, post
+from mrt_termin_monitor.errors import ExitCode, MonitorError
 from mrt_termin_monitor.redaction import RedactionFilter
-from mrt_termin_monitor.sites import load_sites
+from mrt_termin_monitor.run import execute
 
 log = logging.getLogger(__name__)
 
@@ -62,53 +60,26 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _run(
-    args: argparse.Namespace, credentials: Path, redaction: RedactionFilter
+    args: argparse.Namespace,
+    credentials: Path,
+    redaction: RedactionFilter,
+    log_file: Path,
+    started: datetime,
 ) -> ExitCode:
     creds = setup.load_credentials(credentials)
     redaction.add_secrets(creds.values())
-    if args.only:
-        return _probe(args.only)
-    raise NotImplementedError("run without --only arrives with the orchestration")
-
-
-def _probe(slugs: list[str]) -> ExitCode:
-    """Live-Probe: ruft je Slug den Adapter auf und loggt jede Messzeile.
-
-    Ohne Budget, Archiv und CSV – das bringt erst die Orchestrierung. Alle Slugs
-    werden vor dem ersten Request geprüft, damit ein Tippfehler keinen halben
-    Lauf erzeugt.
-    """
-    # Doppelte Slugs nur einmal abfragen – jede Wiederholung wäre Portal-Last.
-    slugs = list(dict.fromkeys(slugs))
-    sites = load_sites()
-    unknown = [slug for slug in slugs if slug not in sites]
-    if unknown:
-        raise ConfigError(f"unknown site slug: {', '.join(unknown)}")
-    run_start = datetime.now().replace(second=0, microsecond=0)
-    for slug in slugs:
-        site = sites[slug]
-        adapter = importlib.import_module(f"mrt_termin_monitor.adapters.{site.adapter}")
-        # GET und POST zählen getrennt; iris und patapp gehen (auch) über POST.
-        before = http.request_count() + post.request_count()
-        rows = adapter.collect(site, run_start)
-        requests = http.request_count() + post.request_count() - before
-        for m in rows:
-            row = m.to_row()
-            # Über log statt print, damit die Ausgabe durch die Redaction läuft.
-            log.info(
-                "%s %s: %s %s (%d requests for site) %s",
-                slug,
-                row["untersuchung"],
-                row["status"],
-                row["naechster_termin"] or "-",
-                requests,
-                row["hinweis"],
-            )
-    return ExitCode.OK
+    gaps = execute(args.only, started)
+    code = ExitCode.PARTIAL if gaps else ExitCode.OK
+    log.info(messages.render(code, log_file, credentials, gaps))
+    return code
 
 
 def _setup(
-    args: argparse.Namespace, credentials: Path, redaction: RedactionFilter
+    args: argparse.Namespace,
+    credentials: Path,
+    redaction: RedactionFilter,
+    log_file: Path,
+    started: datetime,
 ) -> ExitCode:
     redaction.add_secrets(setup.run_dialog(credentials).values())
     return ExitCode.OK
@@ -134,7 +105,9 @@ def main(argv: list[str] | None = None) -> int:
     """
     argv = sys.argv[1:] if argv is None else argv
     args = _parser().parse_args(argv)
-    log_file = paths.log_dir() / f"run_{runinfo.lauf_id(datetime.now())}.log"
+    # Einmal bestimmt: dieselbe Minute benennt Log-Datei und Lauf-CSV.
+    started = datetime.now().replace(second=0, microsecond=0)
+    log_file = paths.log_dir() / f"run_{runinfo.lauf_id(started)}.log"
     credentials = paths.credentials_file()
     redaction = RedactionFilter()
     try:
@@ -148,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         for line in runinfo.header_lines(argv, credentials):
             log.debug(line)
         retention.prune_logs(log_file.parent)
-        return int(args.handler(args, credentials, redaction))
+        return int(args.handler(args, credentials, redaction, log_file, started))
     except (Exception, KeyboardInterrupt) as exc:
         code = _exit_code(exc)
         # DEBUG geht nur in die Datei: Traceback nie auf die Konsole.
