@@ -213,3 +213,43 @@ mr_feldkirch:
       code: onmKnie                       # Binnengroßschreibung wie im Katalog
       # Der Mandant hängt Lauftext an den Namen; nur der stabile Anfang.
       expected_title: MRT Knie
+
+# --- klinix (Diagnostikum-Gruppe): ein anonymer GET je Untersuchung auf
+# /services/klinixservice/api/public/appointment-slot/first-available-slot-time?exas=<code>.
+# Die Antwort ist schon der Messwert: ein JSON-String mit dem Zeitstempel des
+# nächsten freien Termins; ein leerer Body heißt „kein Termin“. Ein serverseitig
+# unbekannter Code liefert ebenfalls einen leeren Body und fällt deshalb nur als
+# Dauer-„keine Termine“ auf – es gibt keine Titelprüfung wie bei XR-WEB (der
+# Vorbehalt steht im Hinweis jeder solchen Zeile).
+# Die Route kennt keinen Kostenträger-Parameter: gemessen wird der eine gemeinsame
+# Pool, daher überall kombiniert. Der Code mknr ist „Kniegelenk rechts“, Modalität MR.
+
+dz_meidling:
+  name: DZ Meidling
+  adapter: klinix
+  abrechnung: kombiniert                  # ein Pool, Zahler nur Formularfeld
+  klinix:
+    host: portal-dzm.diagnostikum.at
+  untersuchungen:
+    knie_rechts:
+      code: mknr                          # Rechts-Code
+
+diagnostikum_linz:
+  name: Diagnostikum Linz
+  adapter: klinix
+  abrechnung: kombiniert
+  klinix:
+    host: portal-dl.diagnostikum.at
+  untersuchungen:
+    knie_rechts:
+      code: mknr
+
+diagnostikum_graz_suedwest:
+  name: Diagnostikum Graz Süd-West
+  adapter: klinix
+  abrechnung: kombiniert
+  klinix:
+    host: portal-dg.diagnostikum.at
+  untersuchungen:
+    knie_rechts:
+      code: mknr
