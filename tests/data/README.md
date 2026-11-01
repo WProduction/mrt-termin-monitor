@@ -3,7 +3,7 @@
 Hier liegen nur Dateien, die für dieses Repo gebaut wurden:
 
 - `golden_run.csv`: Soll-Bytes des CSV-Writers.
-- `<adapter>/*.html|json`: handgebaute **Struktur-Skelette** der Portal-Antworten.
+- `<adapter>/*.html|json|xml`: handgebaute **Struktur-Skelette** der Portal-Antworten.
   Sie enthalten nur die Elemente, die der Parser liest, und Platzhalter-Texte,
   dazu Hosts wie `example.at`.
 

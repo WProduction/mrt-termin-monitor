@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <GetShortLongTitlesResponse xmlns="http://tempuri.org/">
+      <GetShortLongTitlesResult>
+        <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+          <DocumentElement xmlns="">
+            <ShortLongTitles diffgr:id="ShortLongTitles1" msdata:rowOrder="0">
+              <tshort>xknr</tshort>
+              <tlong>MR Knie rechts</tlong>
+              <duration>20</duration>
+              <modality>MR</modality>
+              <category>Gelenke</category>
+            </ShortLongTitles>
+            <ShortLongTitles diffgr:id="ShortLongTitles2" msdata:rowOrder="1">
+              <tshort>xknl</tshort>
+              <tlong>MR Knie links</tlong>
+              <duration>20</duration>
+              <modality>MR</modality>
+              <category>Gelenke</category>
+            </ShortLongTitles>
+            <ShortLongTitles diffgr:id="ShortLongTitles3" msdata:rowOrder="2">
+              <tshort>xckn</tshort>
+              <tlong>CT Knie</tlong>
+              <duration>10</duration>
+              <modality>CT</modality>
+              <category>Gelenke</category>
+            </ShortLongTitles>
+            <ShortLongTitles diffgr:id="ShortLongTitles4" msdata:rowOrder="3">
+              <tshort>pxkn</tshort>
+              <tlong>MR Knie privat</tlong>
+              <duration>20</duration>
+              <modality>MRP</modality>
+              <category>Privat</category>
+            </ShortLongTitles>
+          </DocumentElement>
+        </diffgr:diffgram>
+      </GetShortLongTitlesResult>
+    </GetShortLongTitlesResponse>
+  </soap:Body>
+</soap:Envelope>

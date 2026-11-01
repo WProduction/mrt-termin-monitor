@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap12:Body>
+    <GetProposedDatesResponse xmlns="http://tempuri.org/">
+      <GetProposedDatesResult>
+        <xs:schema id="GetProposedDates" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+          <xs:element name="GetProposedDates" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+            <xs:complexType>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="Dates">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="id" type="xs:int" minOccurs="0" />
+                      <xs:element name="start" type="xs:dateTime" minOccurs="0" />
+                      <xs:element name="startDate" type="xs:string" minOccurs="0" />
+                      <xs:element name="startTime" type="xs:string" minOccurs="0" />
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+                <xs:element name="Errors">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="Description" type="xs:string" minOccurs="0" />
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:choice>
+            </xs:complexType>
+          </xs:element>
+        </xs:schema>
+        <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+          <GetProposedDates xmlns="">
+            <Dates diffgr:id="Dates1" msdata:rowOrder="0">
+              <id>100245</id>
+              <start>2099-03-11T16:20:00+01:00</start>
+              <startDate>11.03.2099</startDate>
+              <startTime>16:20</startTime>
+            </Dates>
+            <Dates diffgr:id="Dates2" msdata:rowOrder="1">
+              <id>100246</id>
+              <start>2099-03-02T07:45:00+01:00</start>
+              <startDate>02.03.2099</startDate>
+              <startTime>07:45</startTime>
+            </Dates>
+            <Dates diffgr:id="Dates3" msdata:rowOrder="2">
+              <id>100247</id>
+              <start>2099-03-20T09:30:00+01:00</start>
+              <startDate>20.03.2099</startDate>
+              <startTime>09:30</startTime>
+            </Dates>
+          </GetProposedDates>
+        </diffgr:diffgram>
+      </GetProposedDatesResult>
+    </GetProposedDatesResponse>
+  </soap12:Body>
+</soap12:Envelope>
