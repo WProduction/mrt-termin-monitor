@@ -253,3 +253,27 @@ diagnostikum_graz_suedwest:
   untersuchungen:
     knie_rechts:
       code: mknr
+
+# --- MiraNext (Patientenportal mit JSON-API unter /api/booking): je Untersuchung
+# zwei GETs. Erst die Service-Zuordnung per Suchbegriff – die Zuordnungs-ID wird zur
+# Laufzeit über exakten Namen und Gerät aufgelöst, damit eine Umnummerierung des
+# Katalogs nicht still eine andere Untersuchung misst –, dann die freien Slots genau
+# dieser Zuordnung, nur mit Kassen-Abrechnung. Die API verlangt einen Referer/Origin
+# der Portalseite; das ist keine Zugangskontrolle, es gibt weder Schlüssel noch Token.
+# Kassen- und Privatpool laufen auf getrennten Geräten; abgefragt wird nur das
+# Kassengerät.
+
+doringer_salzburg:
+  name: Radiologie Doringer, Salzburg
+  adapter: miranext
+  abrechnung: kasse                       # eigenes Kassengerät; das Privatgerät wird nie abgefragt
+  miranext:
+    portal_id: 3                          # Mandant, API-Parameter c_Id (id= liefert 403)
+    device: MR                            # Kassengerät; PMR-S = Privat, PMR-SF nicht online buchbar
+  untersuchungen:
+    knie_rechts:
+      search: Kniegelenk                  # Suchbegriff der Service-Zuordnung
+      service_name: MR Kniegelenk rechts  # exakt; „bds.“ und „je Seite“ fallen so heraus
+      # Erwartungswert: weicht die aufgelöste ID ab, steht das im Hinweis, gemessen
+      # wird mit der aufgelösten.
+      expected_id: 4d9ade1e-ece0-5017-a0b5-9ce8814ae193
