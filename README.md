@@ -12,7 +12,7 @@ Studie hinaus.
 
 ## Starten
 
-Voraussetzung: Windows mit Python ≥ 3.14 (python.org). ZIP
+Voraussetzung: Windows mit Python 3.14 oder 3.15 (python.org). ZIP
 `mrt-termin-monitor-<version>.zip` aus den
 [GitHub-Releases](https://github.com/WProduction/mrt-termin-monitor/releases) entpacken,
 `install.cmd` doppelklicken und danach über die Desktop-Verknüpfung starten.

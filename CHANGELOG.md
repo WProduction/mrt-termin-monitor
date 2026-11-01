@@ -6,6 +6,23 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.1.2] – 2026-11-01
+
+### Fixed
+
+- Mit Python 3.15 (seit Oktober 2026 Standard auf python.org) brach die Installation mit
+  „No matching distribution found for lxml“ ab. Das ZIP enthält jetzt Pakete für
+  Python 3.14 und 3.15; PyYAML liegt ohne C-Beschleunigung bei, weil es dafür noch kein
+  fertiges Paket für 3.15 gibt.
+- `install.cmd` legt die Programmumgebung bei jeder Installation neu an. Nach einem
+  Python-Wechsel blieben sonst Pakete der alten Version liegen; die Zugangsdaten bleiben.
+
+### Changed
+
+- `install.cmd` sucht gezielt Python 3.15, dann 3.14, und meldet jede andere Version
+  verständlich, statt sie an pip scheitern zu lassen.
+- Benutzerhandbuch und README: Voraussetzung ist Python 3.14 oder 3.15.
+
 ## [0.1.1] – 2026-11-01
 
 ### Fixed
@@ -37,6 +54,7 @@ Erste Version für den Studienbetrieb.
   Wochen-Task (Montag 09:00) und `docs/benutzerhandbuch.html`.
 - Projektgerüst: Lizenz, Commit-Hooks, CI.
 
-[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/WProduction/mrt-termin-monitor/releases/tag/v0.1.0
