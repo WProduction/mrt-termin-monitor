@@ -107,6 +107,11 @@ Dieses Repository ist öffentlich.
 - Nie Credentials, nie Portal-Mitschnitte stagen.
 - SVNR-förmige Testwerte zur Laufzeit zusammensetzen (`"1234" + "010180"`), nie als
   10-Ziffern-Literal – der Hook `no-svnr` hat keine Ausnahme für `tests/`.
+- **Sitzungstoken und Tickets** (z. B. das PatApp-Ticket) entstehen erst zur
+  Laufzeit; die Log-Redaction kennt sie nicht. Deshalb: nie loggen (höchstens die
+  Länge), nie in `note`, Exception-Text oder Archiv – die Antwort wird vor dem
+  Archivieren um das Token bereinigt. Ein Test mit `caplog` auf `DEBUG` belegt das
+  je Adapter.
 
 ## Session-Ende
 
