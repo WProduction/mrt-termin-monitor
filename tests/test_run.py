@@ -143,6 +143,10 @@ def test_budget_exceeded_keeps_rows_and_skips_rest(monkeypatch, portal, capsys) 
     assert [row["institut_id"] for row in csv_rows()] == ["dz_stadlau"]
     err = capsys.readouterr().err
     assert err.count("UEBERSPRUNGEN ") == 2
+    assert "request budget" not in err
+    assert "request budget exceeded at dz_simmering" in next(
+        paths.log_dir().glob("*.log")
+    ).read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize(

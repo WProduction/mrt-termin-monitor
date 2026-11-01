@@ -91,7 +91,9 @@ def execute(only: list[str] | None, run_start: datetime) -> int:
         try:
             site_rows = adapters[site.slug].collect(site, run_start, archive=archive)
         except http.BudgetExceededError:
-            log.error("request budget exceeded at %s - run stopped", site.slug)
+            # Nur ins Log: die Konsole zeigt den Abbruch über UEBERSPRUNGEN und die
+            # deutsche Fehlermeldung; ein englischer Satz dort verwirrte nur.
+            log.debug("request budget exceeded at %s - run stopped", site.slug)
             for skipped in sites[index:]:
                 log.info(messages.ZEILE_UEBERSPRUNGEN.format(name=skipped.name))
             # Was schon erhoben ist, sind gültige Messungen – nicht verwerfen.
