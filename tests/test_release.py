@@ -46,6 +46,16 @@ def test_install_checks_requires_python() -> None:
     assert f"Python {major}.{minor} oder neuer" in install
 
 
+def test_install_refuses_source_archive_before_touching_anything() -> None:
+    # Im GitHub-Quellcode-Archiv liegt install.cmd unter release\ ohne wheels\; die
+    # Prüfung muss vor Python-Suche und venv stehen, sonst kommt nur die pip-Meldung.
+    install = (RELEASE / "install.cmd").read_text(encoding="ascii")
+    check = install.index('if not exist "%~dp0wheels\\" goto :falsches_zip')
+    assert check < install.index("py -3")
+    assert check < install.index("-m venv")
+    assert "\n:falsches_zip\n" in install
+
+
 def test_task_xml_settings() -> None:
     raw = TASK_XML.read_bytes()
     # schtasks /xml lehnt encoding="UTF-8" ab („Codierung kann nicht geändert werden“).

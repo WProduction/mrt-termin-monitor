@@ -11,6 +11,12 @@ set "PYV=%VENV%\Scripts\python.exe"
 echo Installation mrt-termin-monitor
 echo.
 
+rem wheels\ fehlt, wenn statt des Release-ZIPs das automatische Quellcode-Archiv
+rem von GitHub ("Source code") entpackt wurde: dort liegt diese Datei unter
+rem release\, aber ohne Pakete. Vor allem anderen pruefen, damit kein halbes venv
+rem entsteht und statt der pip-Meldung ein verstaendlicher Satz kommt.
+if not exist "%~dp0wheels\" goto :falsches_zip
+
 rem Zuerst der py-Launcher (python.org-Standard), dann python im PATH. Der
 rem WindowsApps-Platzhalter "python" ohne installiertes Python scheitert hier.
 set "PY="
@@ -44,6 +50,14 @@ echo OK: Installation abgeschlossen. Gestartet wird ueber die Verknuepfung
 echo "MRT-Termin-Monitor" auf dem Desktop.
 pause
 exit /b 0
+
+:falsches_zip
+echo FEHLER: Neben install.cmd fehlt der Ordner "wheels" mit den Programmpaketen.
+echo Vermutlich wurde die falsche Datei heruntergeladen ("Source code").
+echo Bitte auf der Release-Seite unter "Assets" die Datei
+echo mrt-termin-monitor-VERSION.zip laden, entpacken und install.cmd darin starten.
+pause
+exit /b 2
 
 :kein_python
 echo FEHLER: Python wurde nicht gefunden.
