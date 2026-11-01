@@ -303,3 +303,46 @@ ambulatorium_doebling:
       # Zuweisung). Einziger offen buchbarer Knie-Grund: die zuweiser-gebundenen
       # Varianten liefern immer leere Listen, ein Wechsel ergäbe still keine_termine.
       reason: 202298
+
+# --- IRIS (Lukassoftware, InterSystems-IRIS-Backend): ohne SVNR lesbar. Eine
+# anonyme Session (POST <base_url>/api/session) liefert ein Bearer-Token, danach
+# GETs: Katalog der kategorie -> Terminarten der gewählten Untersuchung -> freie
+# Termine je Terminart (höchstens drei, gemessen wird das Minimum über alle) im
+# Horizont von horizon_days ab dem Tag nach dem Lauf.
+# pattern ist ein Regex auf „Bezeichnung Lateralität“ des Katalogeintrags und muss
+# genau EINEN Eintrag der kategorie treffen; „Knie“ allein trifft links, rechts und
+# beidseits und wird zur Fehlerzeile. kalender und ressource führt der Katalog
+# nicht: sie stehen nur im ausgelieferten Client-Code des Mandanten. Ändert der
+# Anbieter sein Frontend, zeigt sich das als keine_termine statt als Fehler.
+# ressource darf eine Liste sein (A,B = zwei Geräte eines Pools in einem Request,
+# genau wie der Portal-Client fragt).
+
+rz_kapfenberg:
+  name: Radiologisches Zentrum Kapfenberg
+  adapter: iris
+  abrechnung: kombiniert                  # eine Zeit, keine Kasse/Privat-Trennung publiziert
+  iris:
+    base_url: https://exchange.radiolog.at/terminbuchung
+    kategorie: MRT
+    kalender: B                           # Client-Code, Kategorie MRT
+    ressource: A
+    horizon_days: 180
+  untersuchungen:
+    knie_rechts:
+      pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
+
+dok_schwaz:
+  name: Kompetenzzentrum DOK Schwaz
+  adapter: iris
+  # Kasse = ein gemeinsamer Pool aller Kassen; Privat ist eine eigene Terminart,
+  # die der Katalog nicht zur Untersuchung liefert – sie wird nie abgefragt.
+  abrechnung: kasse
+  iris:
+    base_url: https://smart.mein-dok.at/terminbuchung
+    kategorie: MRT
+    kalender: M                           # nur der Standort Schwaz hat online einen MRT-Kalender
+    ressource: A,B                        # beide Geräte in einem Request, wie der Client
+    horizon_days: 180
+  untersuchungen:
+    knie_rechts:
+      pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
