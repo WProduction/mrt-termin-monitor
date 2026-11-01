@@ -249,6 +249,26 @@ def test_miranext_block_loads(tmp_path: Path) -> None:
     }
 
 
+DOCTENA = """\
+doebling_beispiel:
+  name: Ambulatorium Beispiel
+  adapter: doctena
+  abrechnung: kombiniert
+  doctena:
+    doctor: 111
+  untersuchungen:
+    knie_rechts:
+      reason: 222
+"""
+
+
+def test_doctena_block_loads_ids_as_int(tmp_path: Path) -> None:
+    site = _load(tmp_path, DOCTENA)["doebling_beispiel"]
+    assert site.params == {"doctor": 111}
+    assert site.exams == {Exam.KNEE_RIGHT: {"reason": 222}}
+    assert site.billing is Billing.COMBINED
+
+
 @pytest.mark.parametrize(
     ("old", "new", "match"),
     [
@@ -331,3 +351,28 @@ def test_klinix_quoted_numeric_code_loads(tmp_path: Path) -> None:
 def test_miranext_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
     assert old in MIRANEXT
     _reject(tmp_path, MIRANEXT.replace(old, new), match)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "match"),
+    [
+        ("    doctor: 111\n", "    {}\n", "'doctor'"),
+        # Gequotete Id ist ein String – der Adapter setzt sie ungeprüft in die URL.
+        ("doctor: 111", "doctor: '111'", "'doctor'"),
+        ("doctor: 111", "doctor: 0", "'doctor'"),
+        ("doctor: 111", "doctor: -1", "'doctor'"),
+        ("doctor: 111", "doctor: true", "'doctor'"),
+        ("doctor: 111", "doctor: 1.5", "'doctor'"),
+        ("doctor: 111", "docter: 111", "docter"),
+        # reason auf Standort-Ebene statt je Untersuchung fiele sonst still weg.
+        ("    doctor: 111\n", "    doctor: 111\n    reason: 222\n", "reason"),
+        ("      reason: 222\n", "      {}\n", "'reason'"),
+        ("reason: 222", "reason: '222'", "'reason'"),
+        ("reason: 222", "reason: 0", "'reason'"),
+        ("reason: 222", "reason: true", "'reason'"),
+        ("reason: 222", "reason: 222\n      code: x", "code"),
+    ],
+)
+def test_doctena_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
+    assert old in DOCTENA
+    _reject(tmp_path, DOCTENA.replace(old, new), match)

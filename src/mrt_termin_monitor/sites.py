@@ -156,6 +156,8 @@ def _site(slug: object, block: object) -> Site:
         _check_klinix(slug, params, exams)
     elif adapter == "miranext":
         _check_miranext(slug, params, exams, _BILLING[billing])
+    elif adapter == "doctena":
+        _check_doctena(slug, params, exams)
 
     # Optional für Portale, die bei erschöpftem Pool erst nach ~30 s antworten;
     # mit dem Standard-Timeout würde daraus „nicht erhoben“ statt der echten Antwort.
@@ -262,6 +264,29 @@ def _check_miranext(
         # Der Katalog führt die Seite im Klartext; die Studie misst nur rechts.
         if "links" in service_name.lower():
             raise ConfigError(f"{where}: service_name must not name the left side")
+
+
+def _check_doctena(
+    slug: str, params: dict[str, Any], exams: dict[str, dict[str, Any]]
+) -> None:
+    # ``doctor`` ist der Doctena-Kalender des Standorts, ``reason`` der
+    # Besuchsgrund je Untersuchung. Unbekannte Schlüssel ablehnen: ein auf
+    # Standort-Ebene gelassenes ``reason`` oder ein vertipptes ``doctor`` fiele
+    # sonst still weg.
+    _only(params, {"doctor"}, f"{slug}.doctena")
+    checks = [(params, "doctor", f"{slug}.doctena")]
+    for exam, values in exams.items():
+        where = f"{slug}.untersuchungen.{exam}"
+        _only(values, {"reason"}, where)
+        checks.append((values, "reason", where))
+    # Ganzzahl statt String (anders als der XR-WEB-Code): Doctena-Ids sind immer
+    # numerisch und gehen ungequotet in die URL – mit int ist dort strukturell
+    # nichts einzuschleusen, und es gibt keine Quote-Falle in der YAML. bool
+    # ausschließen, weil ``true`` in Python ein int ist.
+    for block, field, where in checks:
+        value = block.get(field)
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise ConfigError(f"{where}: {field!r} must be an integer > 0")
 
 
 def _only(block: dict[str, Any], allowed: set[str], where: str) -> None:
