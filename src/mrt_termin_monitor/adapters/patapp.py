@@ -22,10 +22,11 @@ Umgang mit den Secrets:
   Die Log-Redaction kennt sie bereits (der Aufrufer lädt dieselbe Datei);
   Server-Texte, die in einen CSV-Hinweis gehen, schwärzt der Adapter zusätzlich
   selbst, denn die CSV läuft nicht durch den Log-Filter.
-* Das Sitzungsticket entsteht erst zur Laufzeit, die Redaction kennt es nicht.
-  Es wird deshalb nie geloggt (höchstens seine Länge), steht nie in einem
-  Hinweis oder einer Exception und wird vor dem Archivieren aus der Antwort
-  entfernt.
+* Das Sitzungsticket entsteht erst zur Laufzeit, der Log-Filter kennt es nicht.
+  Es wird deshalb nie geloggt (höchstens seine Länge). Nach dem Empfang nimmt
+  der Adapter es in seine eigene Schwärzung auf – ein Server-Fehlertext (etwa
+  „Ticket abgelaufen“) könnte es zitieren – und entfernt es vor dem Archivieren
+  aus jeder Antwort, die es enthalten kann.
 
 Nur lesende Operationen: buchende oder sperrende Aufrufe stehen nicht auf der
 Whitelist des fetch-Layers und sind damit nicht sendbar. Die Roh-Antwort geht
@@ -45,7 +46,7 @@ from mrt_termin_monitor.errors import ConfigError
 from mrt_termin_monitor.fetch import http, post
 from mrt_termin_monitor.model import Exam, Measurement, Status
 from mrt_termin_monitor.parse import patapp as parse_patapp
-from mrt_termin_monitor.redaction import RedactionFilter
+from mrt_termin_monitor.redaction import RedactionFilter, variants
 from mrt_termin_monitor.sites import Site
 
 log = logging.getLogger(__name__)
@@ -64,6 +65,10 @@ _RIGHT = re.compile(r"\brechts\b", re.IGNORECASE)
 # Aufrufers.
 Archive = Callable[[str, bytes], None]
 
+# Platzhalter für ein aus einer Archivdatei entferntes Ticket; ohne spitze
+# Klammern, damit die Datei gültiges XML bleibt.
+_TICKET_REMOVED = b"ticket-removed"
+
 
 def _enc(value: str) -> str:
     """Kodiert einen Parameterwert wie der Portal-Client (``encodeURIComponent``).
@@ -76,6 +81,20 @@ def _enc(value: str) -> str:
     # encodeURIComponent lässt A-Za-z0-9 - _ . ! ~ * ' ( ) stehen; quote() lässt
     # -_.~ ohnehin stehen, der Rest kommt über safe dazu.
     return quote(value, safe="!*'()")
+
+
+def _without_ticket(content: bytes, ticket: str) -> bytes:
+    """Entfernt das Sitzungsticket aus einer Roh-Antwort vor dem Archivieren.
+
+    Die Terminantwort enthält das Ticket im Normalfall nicht, ein Fehlertext des
+    Servers kann es aber zitieren – und die Datei liegt unverschlüsselt auf der
+    Platte. Byteweise und ohne XML-Parse, damit auch eine Antwort bereinigt
+    wird, die der Parser gleich ablehnt; neben dem Rohwert auch die
+    URL-kodierten Formen, weil der Dienst Parameter so entgegennimmt.
+    """
+    for form in sorted(variants(ticket), key=len, reverse=True):
+        content = content.replace(form.encode(), _TICKET_REMOVED)
+    return content
 
 
 def task_count(site: Site) -> int:
@@ -96,9 +115,10 @@ def collect(
     Args:
         site: validiertes Institut mit ``adapter: patapp``.
         run_start: Lauf-Start (lokal, naiv, minutengenau) für alle Zeilen.
-        archive: erhält ``<slug>_catalog.xml``, ``<slug>_ticket.xml`` (Ticket
-            entfernt) und je Untersuchung ``<slug>_<untersuchung>.xml`` mit den
-            Roh-Bytes, bevor geparst wird; ``None`` = nicht archivieren.
+        archive: erhält ``<slug>_catalog.xml``, ``<slug>_ticket.xml`` und je
+            Untersuchung ``<slug>_<untersuchung>.xml`` mit den Roh-Bytes, bevor
+            geparst wird – das Ticket ist überall entfernt; ``None`` = nicht
+            archivieren.
 
     Returns:
         Messzeilen in der Reihenfolge von ``site.exams``. Scheitern Credentials,
@@ -134,7 +154,9 @@ def collect(
         # Der Fehlertext nennt nur den Pfad, nie Werte.
         return rows_all(Status.NOT_COLLECTED, f"credentials unavailable: {exc}")
     # Für Fremdtexte, die in die CSV gehen: der Log-Filter sieht die CSV nicht.
-    redact = RedactionFilter(creds.values()).redact
+    # Eigene Instanz, weil später das Ticket dazukommt.
+    redactor = RedactionFilter(creds.values())
+    redact = redactor.redact
 
     # --- 1. Katalog (ohne Anmeldung) -------------------------------------------
     try:
@@ -190,6 +212,9 @@ def collect(
         return rows_all(Status.NOT_COLLECTED, redact(f"login rejected: {ticket.error}"))
     # Nur die Länge – der Wert selbst darf nirgends hin.
     log.debug("%s: ticket received (%d chars)", site.slug, len(ticket.value))
+    # Ab hier kennt die Schwärzung auch das Ticket: ein Server-Fehlertext könnte
+    # es zitieren, und der ginge sonst ungefiltert in den CSV-Hinweis.
+    redactor.add_secrets([ticket.value])
 
     # --- 3. Termine je Untersuchung --------------------------------------------
     rows: list[Measurement] = []
@@ -233,7 +258,9 @@ def collect(
             continue
 
         if archive is not None:
-            archive(f"{site.slug}_{exam}.xml", result.content)
+            archive(
+                f"{site.slug}_{exam}.xml", _without_ticket(result.content, ticket.value)
+            )
         if result.status_code >= 400:
             rows.append(
                 row(

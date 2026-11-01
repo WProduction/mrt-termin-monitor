@@ -200,6 +200,23 @@ def test_missing_credentials_is_not_collected_without_request(
     assert spy.calls == []
 
 
+def test_locked_credentials_is_not_collected_without_request(
+    spy: Spy, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Datei vorhanden, aber gerade gesperrt (Sync-Client, Virenscanner): auch
+    # das ist „nicht erhoben“ für dieses Institut, nie ein Laufabbruch.
+    def locked(self: Path, *args, **kwargs) -> str:
+        raise PermissionError(13, "locked", str(self))
+
+    monkeypatch.setattr(Path, "read_text", locked)
+    rows = adapter.collect(SITE, RUN_START)
+    assert [m.status for m in rows] == [Status.NOT_COLLECTED]
+    assert rows[0].note.startswith(
+        "credentials unavailable: credentials file unreadable"
+    )
+    assert spy.calls == []
+
+
 def test_catalogue_fetch_error_is_not_collected_after_one_call(spy: Spy) -> None:
     spy.responses["GetShortLongTitles"] = post.FetchError("POST failed: timeout")
     archived: list[str] = []
@@ -285,6 +302,28 @@ def test_server_error_in_dates_is_parse_error_never_no_slots(spy: Spy) -> None:
     (m,) = adapter.collect(SITE, RUN_START)
     assert m.status is Status.ERROR_PARSE
     assert "placeholder server error" in m.note
+
+
+def test_ticket_quoted_by_server_is_redacted_in_note_and_archive(spy: Spy) -> None:
+    # Der Server könnte das Ticket in einer Fehlerbeschreibung zitieren
+    # (abgelaufen, ungültig). Es entsteht erst zur Laufzeit, der Log-Filter kennt
+    # es nicht – der Adapter muss es selbst aus Hinweis und Archiv halten.
+    quoted = _skeleton("termine_fehler.xml").replace(
+        b"placeholder server error", f"ticket {TICKET} expired".encode()
+    )
+    spy.responses["GetProposedDates"] = _result(quoted)
+    archived: dict[str, bytes] = {}
+    (m,) = adapter.collect(
+        SITE, RUN_START, archive=lambda n, c: archived.update({n: c})
+    )
+    assert m.status is Status.ERROR_PARSE
+    assert TICKET not in m.note
+    assert "server reports: ticket *** expired" in m.note
+    saved = archived["mr_beispiel_knee_right.xml"]
+    assert TICKET.encode() not in saved
+    assert b"ticket ticket-removed expired" in saved
+    # Die Katalog-Datei bleibt unverändert: sie entsteht vor dem Ticket.
+    assert archived["mr_beispiel_catalog.xml"] == _skeleton("katalog.xml")
 
 
 def test_dates_fetch_error_is_not_collected(spy: Spy) -> None:
