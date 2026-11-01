@@ -67,3 +67,20 @@ def test_broken_file_is_config_error(tmp_path: Path, content: str | None) -> Non
 def test_non_ascii_digits_rejected() -> None:
     # Arabisch-indische Ziffern; zusammengesetzt, weil auch sie den Hook no-svnr träfen.
     assert setup.normalize_svnr("١" * 10) is None
+
+
+def test_locked_file_is_config_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Fenster zwischen is_file() und read_text(): Sync-Client oder Virenscanner
+    # sperrt die Datei. Muss ConfigError bleiben, damit ein Aufrufer sie wie
+    # „Datei fehlt“ behandeln kann statt mit einem OSError auszusteigen.
+    target = tmp_path / "credentials.yaml"
+    target.write_text(f"svnr: '{SVNR}'\n", encoding="utf-8")
+
+    def locked(self: Path, *args, **kwargs) -> str:
+        raise PermissionError(13, "locked", str(self))
+
+    monkeypatch.setattr(Path, "read_text", locked)
+    with pytest.raises(ConfigError, match="credentials file unreadable"):
+        setup.load_credentials(target)

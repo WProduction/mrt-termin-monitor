@@ -74,8 +74,9 @@ def load_credentials(path: Path) -> dict[str, str]:
         ``svnr`` (10 Ziffern) sowie ``patient_name``/``patient_mobile`` (ggf. leer).
 
     Raises:
-        ConfigError: Datei fehlt, ist kein gültiges YAML-Mapping oder die SVNR
-            fehlt bzw. hat nicht 10 Ziffern. Fehlertexte nennen nie Werte.
+        ConfigError: Datei fehlt oder ist nicht lesbar (Sperre, Rechte), ist kein
+            gültiges YAML-Mapping oder die SVNR fehlt bzw. hat nicht 10 Ziffern.
+            Fehlertexte nennen nie Werte.
     """
     if not path.is_file():
         raise ConfigError(f"credentials file missing: {path}")
@@ -84,7 +85,11 @@ def load_credentials(path: Path) -> dict[str, str]:
         # ungequotete SVNR mit führender Null würde sonst als Oktalzahl gelesen.
         # Baut wie safe_load keine Python-Objekte.
         data = yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    except (yaml.YAMLError, UnicodeDecodeError) as exc:
+    except (OSError, yaml.YAMLError, UnicodeDecodeError) as exc:
+        # OSError gehört dazu: zwischen is_file() und read_text() kann ein
+        # Sync-Client oder Virenscanner die Datei sperren. Die Aufrufer rechnen
+        # nur mit ConfigError; jede andere Exception würde einen Lauf über alle
+        # Institute abbrechen statt nur eines als nicht erhoben zu markieren.
         # Der YAML-Fehlertext zitiert die Zeile; die Redaction schwärzt SVNR-Formen.
         raise ConfigError(f"credentials file unreadable: {path}") from exc
     if not isinstance(data, dict):
