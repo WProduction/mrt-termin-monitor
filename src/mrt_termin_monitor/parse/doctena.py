@@ -56,6 +56,11 @@ def parse(raw: bytes | str) -> DoctenaResult:
             default=None,
         )
     except ValueError, KeyError, TypeError, IndexError:
+        # Kein Python-2-Rest: ab Python 3.14 (PEP 758) fängt die Liste ohne
+        # Klammern alle vier Typen; ruff format entfernt die Klammern sogar.
+        # Wer ein „as exc“ ergänzt, muss Klammern setzen und alle vier Typen
+        # behalten – sonst schlägt eine strukturell kaputte Antwort als
+        # unbehandelte Exception durch statt als ERROR_PARSE.
         # ValueError deckt auch kaputtes JSON und ungültiges UTF-8 ab.
         return DoctenaResult(Status.ERROR_PARSE)
 
