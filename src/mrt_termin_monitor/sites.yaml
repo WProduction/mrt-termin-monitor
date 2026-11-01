@@ -346,3 +346,49 @@ dok_schwaz:
   untersuchungen:
     knie_rechts:
       pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
+
+# --- HGS PatApp/PatWeb: SOAP über POST an service_url, je Institut drei lesende
+# Aufrufe: GetShortLongTitles (Katalog, ohne Anmeldung) -> GetPatientTicket
+# (Anmeldung mit der SVNR aus credentials.yaml, nie aus dieser Datei) ->
+# GetProposedDates je Untersuchung. Die Untersuchungscodes sind hausintern und
+# stehen in keiner öffentlichen Datei; der Adapter wählt sie bei jedem Lauf über
+# `pattern` (Regex, Groß-/Kleinschreibung egal) auf dem Klartext des Katalogs,
+# nur Modalität MR. Trifft das Muster keinen oder mehr als einen Eintrag, liefert
+# der Block fehler_parsen mit der Kandidatenliste im hinweis – nie eine geratene
+# Untersuchung. service_url ist der Dienst (…/service.asmx), nicht die Portalseite.
+
+roentgen_wien_nord:
+  name: Röntgen Wien Nord
+  adapter: patapp
+  abrechnung: kombiniert
+  patapp:
+    service_url: https://termin.roentgen-wien-nord.at/hgsservice/service.asmx
+  untersuchungen:
+    knie_rechts:
+      pattern: Knie                       # trifft nur „MR-Knie“; der Katalog kennt kein re/li
+
+rachinger_linz:
+  name: Dr. Rachinger, Linz
+  adapter: patapp
+  # Kassen-Track mit eigenem Dienst; der Privat-Track läuft über einen anderen
+  # Dienst und führt im Katalog eigene Codes mit Modalität MRP – wird nicht
+  # abgefragt.
+  abrechnung: kasse
+  patapp:
+    service_url: https://onlinekalender.institut-rachinger.at/hgsservice/service.asmx
+  untersuchungen:
+    knie_rechts:
+      # Trifft nur „Kniegelenk“ (seitenneutral); der Privat-Eintrag desselben
+      # Katalogs hat die Modalität MRP und fällt durch den MR-Filter.
+      pattern: Knie
+
+mr_ct_horn:
+  name: MR-CT DZ Horn
+  adapter: patapp
+  abrechnung: kasse                       # Privattermine nur telefonisch
+  patapp:
+    # Eigener Dienstpfad des Standorts Horn; der zweite Standort wird nicht abgefragt.
+    service_url: https://termin.diagnose.team/hgsserviceho/service.asmx
+  untersuchungen:
+    knie_rechts:
+      pattern: Kniegelenk rechts          # nur seitengetrennt geführt; „Knie“ träfe beide Seiten
