@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!--
+  schtasks /xml liest kein encoding="UTF-8"; darum reines ASCII ohne Angabe.
+  Optionaler woechentlicher Lauf (Montag 09:00) fuer den angemeldeten Benutzer.
+  Registrieren mit register-task.cmd, entfernen mit unregister-task.cmd.
+  pythonw.exe: kein Konsolenfenster; Ergebnis und Log liegen wie beim manuellen
+  Start unter Dokumente\mrt-termin-monitor.
+-->
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>mrt-termin-monitor: woechentliche Erhebung der MRT-Wartezeiten</Description>
+    <URI>\MRT-Termin-Monitor</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <CalendarTrigger>
+      <!-- Ein Montag; Uhrzeit ohne Zeitzone = lokale Zeit. -->
+      <StartBoundary>2026-11-02T09:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByWeek>
+        <DaysOfWeek>
+          <Monday />
+        </DaysOfWeek>
+        <WeeksInterval>1</WeeksInterval>
+      </ScheduleByWeek>
+    </CalendarTrigger>
+  </Triggers>
+  <Principals>
+    <!-- Nur bei angemeldetem Benutzer, ohne gespeichertes Passwort, ohne Admin. -->
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <!-- Ein Lauf dauert einige Minuten; ein zweiter Start parallel wuerde dieselben
+         Portale doppelt abfragen und in dieselbe Minute schreiben. -->
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <!-- Laptop: auch im Akkubetrieb starten und nicht abbrechen. -->
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <!-- War der Laptop Montag 09:00 aus, laeuft die Erhebung beim naechsten Start. -->
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <!-- Grosszuegig: ein voller Lauf braucht etwa 5 Minuten. -->
+    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <!-- Der Taskplaner setzt %LOCALAPPDATA% des ausfuehrenden Benutzers ein. -->
+      <Command>%LOCALAPPDATA%\mrt-termin-monitor\venv\Scripts\pythonw.exe</Command>
+      <Arguments>-X utf8 -m mrt_termin_monitor run</Arguments>
+    </Exec>
+  </Actions>
+</Task>

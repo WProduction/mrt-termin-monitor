@@ -7,7 +7,9 @@ Arbeitsregeln für Coding-Agenten und Menschen in diesem Repository.
 Python ≥ 3.14, src-Layout `src/mrt_termin_monitor/`, Build-Backend hatchling,
 Abhängigkeiten über uv mit committetem `uv.lock`. `requirements.txt` wird aus dem
 Lock generiert und nie von Hand editiert – die Bediener-Laptops installieren mit
-pip, nicht mit uv. Lock einfrieren: keine Tool-Upgrades während der Studie.
+pip, nicht mit uv. Ohne Projektzeile (`--no-emit-project`): das eigene Wheel baut
+`tools/build_release.py` per `uv build`, `pip download` lädt nur die Abhängigkeiten.
+Lock einfrieren: keine Tool-Upgrades während der Studie.
 
 ## Einrichtung nach dem Klonen
 
@@ -29,7 +31,7 @@ uv run pytest
 Lock-Drift-Check (ebenfalls in der CI):
 
 ```
-uv export --no-dev --format requirements-txt -o requirements.txt && git diff --exit-code requirements.txt
+uv export --no-dev --no-emit-project --format requirements-txt -o requirements.txt && git diff --exit-code requirements.txt
 ```
 
 Nach jeder Abhängigkeitsänderung (`uv add`, `uv lock`) den Export neu erzeugen und

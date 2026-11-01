@@ -1,0 +1,5 @@
+mrt-termin-monitor - Installation in drei Schritten (Python 3.14 oder neuer noetig):
+1. Diese ZIP-Datei vollstaendig entpacken (Rechtsklick > Alle extrahieren).
+2. Im entpackten Ordner install.cmd doppelklicken und den Fragen folgen.
+3. Danach startet die Verknuepfung "MRT-Termin-Monitor" auf dem Desktop einen Lauf.
+Ausfuehrliche Anleitung: docs\benutzerhandbuch.html
