@@ -319,6 +319,10 @@ diagnostikum_linz:
       code: mknr
     lws:
       code: mlws                          # Portal-Kürzel für „MRT der Lendenwirbelsäule“
+    mr_angio_nieren_km:
+      # Einziger, neutraler Eintrag für die Nierenarterien – Kontrastmittel ist im
+      # Portal nicht wählbar.
+      code: mani                          # Portal-Kürzel für „MR Angiographie der Nierenarterien“
 
 diagnostikum_graz_suedwest:
   name: Diagnostikum Graz Süd-West
