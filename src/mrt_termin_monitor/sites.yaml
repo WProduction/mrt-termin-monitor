@@ -200,6 +200,11 @@ rainer_zwettl:
     knie_rechts:
       code: sd0050                        # hausinternes Schema sd00xx
       expected_title: MR-Knie             # mit Bindestrich
+    lws:
+      # Sammelcode Wirbelsäule: das Portal führt HWS/BWS/LWS als einen Eintrag;
+      # ein LWS-Patient müsste genau diesen wählen, deshalb zählt er für lws.
+      code: sd0031                        # Sammel-Eintrag HWS/BWS/LWS
+      expected_title: MR-Wirbelsäule      # mit Bindestrich, trennt von „MR Gesamte Wirbelsäule“
 
 suedost_feldbach:
   name: CT/MR Institut Südost (Feldbach)
