@@ -233,6 +233,11 @@ mr_ct_klagenfurt:
     knie_rechts:
       code: onmrk                         # seitenneutral
       expected_title: MRT Knie
+    lws:
+      # Das Präfix „on“ steht bei diesem Mandanten für „online“, nicht für
+      # „privat“ – andere Mandanten nutzen dasselbe Präfix für den Privatpool.
+      code: onmrlws
+      expected_title: MRT LWS
 
 mr_bregenz:
   name: MR Institut Bregenz
