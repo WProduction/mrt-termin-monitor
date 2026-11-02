@@ -482,3 +482,51 @@ def test_iris_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
 def test_patapp_rejects(tmp_path: Path, old: str, new: str, match: str) -> None:
     assert old in PATAPP
     _reject(tmp_path, PATAPP.replace(old, new), match)
+
+
+# Fälle außer knie_rechts, die mit einer Live-Probe (Status ok mit Datum) aufgenommen
+# wurden. Der Test hält die Liste fest: eine still gelöschte oder versehentlich
+# ergänzte Zelle ändert das Panel der Studie und muss hier bewusst nachgezogen werden.
+_LWS = {
+    "radiologicum_penzing",
+    "dz_stadlau",
+    "dz_simmering",
+    "dz_urania",
+    "imagin_floridsdorf",
+    "diagnosehaus_3",
+    "hansson_diagnostik",
+    "radiologie_waidhofen",
+    "dz_baden",
+    "rainer_zwettl",
+    "mr_ct_klagenfurt",
+    "mr_bregenz",
+    "mr_feldkirch",
+    "dz_meidling",
+    "diagnostikum_linz",
+    "diagnostikum_graz_suedwest",
+    "doringer_salzburg",
+    "rz_kapfenberg",
+    "dok_schwaz",
+    "roentgen_wien_nord",
+    "rachinger_linz",
+    "mr_ct_horn",
+}
+_RENAL_MRA = {
+    "dz_baden",
+    "diagnostikum_linz",
+    "diagnostikum_graz_suedwest",
+    "rz_kapfenberg",
+}
+
+
+def test_packaged_file_has_exactly_the_probed_cases() -> None:
+    pairs = {
+        (slug, exam)
+        for slug, site in load_sites().items()
+        for exam in site.exams
+        if exam is not Exam.KNEE_RIGHT
+    }
+    expected = {(s, Exam.LUMBAR_SPINE) for s in _LWS} | {
+        (s, Exam.RENAL_MRA_CONTRAST) for s in _RENAL_MRA
+    }
+    assert pairs == expected
