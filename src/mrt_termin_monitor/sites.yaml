@@ -420,6 +420,8 @@ rz_kapfenberg:
   untersuchungen:
     knie_rechts:
       pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
+    lws:
+      pattern: Lendenwirbelsäule          # nur Eintrag 481; „LWS“ träfe auch BWS+LWS und HWS+LWS
 
 dok_schwaz:
   name: Kompetenzzentrum DOK Schwaz
