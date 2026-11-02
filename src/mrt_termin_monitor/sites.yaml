@@ -495,3 +495,5 @@ mr_ct_horn:
   untersuchungen:
     knie_rechts:
       pattern: Kniegelenk rechts          # nur seitengetrennt geführt; „Knie“ träfe beide Seiten
+    lws:
+      pattern: ^LWS$                      # CT-Zwilling clws trägt denselben Klartext, fällt durch den MR-Filter
