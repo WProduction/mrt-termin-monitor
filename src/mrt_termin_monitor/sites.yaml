@@ -182,6 +182,9 @@ dz_baden:
     knie_rechts:
       code: mrknr                         # Portal-Code aus der URL (exas=mrknr), nicht abgeleitet
       expected_title: MRT des rechten Kniegelenkes   # Live-Titel vom 2026-11-01
+    lws:
+      code: mrlw                          # Portal-Code aus der URL (exas=mrlw), nicht abgeleitet
+      expected_title: MRT der Lendenwirbelsäule   # Live-Titel vom 2026-11-01; bei Abweichung fehler_parsen statt ok
 
 rainer_zwettl:
   name: Dr. Rainer Diagnostik, Zwettl
