@@ -142,6 +142,12 @@ hansson_diagnostik:
     knie_rechts:
       code: onmrkn                        # seitenneutral, der Katalog kennt kein re/li
       expected_title: MR Knie
+    lws:
+      # Sammelcode Wirbelsäule: Der Katalog führt keinen eigenen LWS-Eintrag; ein
+      # Patient mit LWS-Zuweisung müsste genau diesen Sammeleintrag wählen.
+      # Das Präfix „on“ heißt hier „online“, nicht „privat“.
+      code: onmrws                        # Sammeleintrag „MR Wirbelsäule“, kein eigener LWS-Code
+      expected_title: MR Wirbelsäule
 
 radiologie_waidhofen:
   name: Radiologie Waidhofen/Ybbs
