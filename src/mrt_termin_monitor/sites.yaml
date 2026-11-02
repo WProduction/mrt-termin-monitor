@@ -15,6 +15,9 @@
 #       knie_rechts:
 #         ...                                 # adapter-spezifisch (Code, Muster …)
 #
+# Kein Portal bietet für lws/mr_angio_nieren_km eine Kontrastmittel-Wahl; gemessen
+# wird der neutrale Eintrag (Stand 2026-11-01).
+#
 # Der Loader (sites.py) prüft alles vor dem ersten Request; ein Fehler hier bricht
 # den Lauf mit Konfigurationsfehler ab, statt Fehlzeilen zu erzeugen.
 

@@ -24,6 +24,8 @@ class Exam(StrEnum):
     """Untersuchung (Fall der Studie). Neuer Wert = Schema-Änderung (``feat!``).
 
     Die Seite steckt im Fall: beim Knie wird nur rechts gemessen.
+    Kein Portal bietet für lws/mr_angio_nieren_km eine Kontrastmittel-Wahl; gemessen
+    wird der neutrale Eintrag (Stand 2026-11-01).
     """
 
     KNEE_RIGHT = "knee_right"
