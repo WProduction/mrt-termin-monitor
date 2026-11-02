@@ -333,6 +333,8 @@ diagnostikum_graz_suedwest:
   untersuchungen:
     knie_rechts:
       code: mknr
+    lws:
+      code: mlws                          # Portalcode „MRT der Lendenwirbelsäule“
 
 # --- MiraNext (Patientenportal mit JSON-API unter /api/booking): je Untersuchung
 # zwei GETs. Erst die Service-Zuordnung per Suchbegriff – die Zuordnungs-ID wird zur
