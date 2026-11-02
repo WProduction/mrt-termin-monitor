@@ -159,7 +159,7 @@ radiologie_waidhofen:
   untersuchungen:
     knie_rechts:
       code: knr-mr
-      expected_title: MRT Knie
+      expected_title: MRT Knie rechts
 
 dz_baden:
   name: MR DZ Baden
