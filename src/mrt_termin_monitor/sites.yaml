@@ -361,6 +361,12 @@ doringer_salzburg:
       # Erwartungswert: weicht die aufgelöste ID ab, steht das im Hinweis, gemessen
       # wird mit der aufgelösten.
       expected_id: 4d9ade1e-ece0-5017-a0b5-9ce8814ae193
+    lws:
+      search: LWS                         # Suchbegriff der Service-Zuordnung
+      service_name: MR LWS                # exakt; „HWS, BWS und LWS“ und „LWS und Hüftgelenk …“ fallen so heraus
+      # Erwartungswert: weicht die aufgelöste ID ab, steht das im Hinweis, gemessen
+      # wird mit der aufgelösten.
+      expected_id: 2db70331-e056-57bc-9195-2ee6c7798cb5
 
 # --- Doctena: ein GET je Untersuchung auf api.doctena.at/agendaSlot (HAL+JSON),
 # Suchfenster 30 Tage ab Lauf-Tag 00:00. Größere Fenster liefern bei dieser API
