@@ -6,6 +6,23 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.1.3] – 2026-11-02
+
+### Fixed
+
+- MR DZ Baden: Die Abfrage nutzte einen falschen Untersuchungscode und endete deshalb bei
+  jedem Lauf auf der Weiterleitungsseite (`fehler_weiterleitung`). Mit Code und Titel des
+  Portals liefert Baden wieder den nächsten Termin.
+- MiraNext (Radiologie Doringer): Leistungen, die das Portal nicht online anbietet oder nur
+  aus seinem Standardkatalog mitführt, hätten ein Datum mit Status `ok` bekommen. Sie
+  werden jetzt übersprungen; die Knie-Messung ist davon nicht betroffen.
+
+### Changed
+
+- Benutzerhandbuch: derzeit zwei dauerhafte Lücken (Feldbach, Döbling) statt drei.
+- `docs/robots-and-terms.md` hält die Befunde zu Doctena, Feldbach, der XR-WEB-Katalogroute
+  und dem patapp-Platzhalter-Ticket fest.
+
 ## [0.1.2] – 2026-11-01
 
 ### Fixed
@@ -54,7 +71,8 @@ Erste Version für den Studienbetrieb.
   Wochen-Task (Montag 09:00) und `docs/benutzerhandbuch.html`.
 - Projektgerüst: Lizenz, Commit-Hooks, CI.
 
-[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/WProduction/mrt-termin-monitor/releases/tag/v0.1.0

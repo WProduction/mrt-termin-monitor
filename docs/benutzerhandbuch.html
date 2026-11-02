@@ -137,7 +137,7 @@ Benutzerkonto.
 <ol class="steps">
   <li>
     <strong>ZIP-Datei freigeben und entpacken.</strong> Auf der Release-Seite steht die
-    richtige Datei unter <em>Assets</em>: <code>mrt-termin-monitor-0.1.2.zip</code> (etwa 9 MB),
+    richtige Datei unter <em>Assets</em>: <code>mrt-termin-monitor-0.1.3.zip</code> (etwa 9 MB),
     nicht <em>Source code</em> – dort fehlen die Programmpakete. Die heruntergeladene Datei
     mit der rechten Maustaste anklicken →
     <em>Eigenschaften</em> → unten das Häkchen <em>Zulassen</em> setzen → <em>OK</em>.
@@ -165,7 +165,7 @@ Benutzerkonto.
 <pre class="console">Installation mrt-termin-monitor
 
 Schritt 1 von 3: Programm wird installiert ...
-mrt-termin-monitor 0.1.2
+mrt-termin-monitor 0.1.3
 Schritt 2 von 3: Verknuepfung auf dem Desktop wird angelegt ...
 Schritt 3 von 3: Einrichtung ...
 Einrichtung mrt-termin-monitor
@@ -187,7 +187,7 @@ Danach kann der entpackte Ordner weg; das Programm braucht ihn nicht mehr.
 <div class="card warnbox">
   <h4>„FEHLER: Neben install.cmd fehlt der Ordner "wheels" mit den Programmpaketen.“</h4>
   Es wurde die falsche Datei heruntergeladen, meist <em>Source code (zip)</em>. Auf der
-  Release-Seite unter <em>Assets</em> die Datei <code>mrt-termin-monitor-0.1.2.zip</code>
+  Release-Seite unter <em>Assets</em> die Datei <code>mrt-termin-monitor-0.1.3.zip</code>
   laden, freigeben, entpacken und <code>install.cmd</code> im entpackten Ordner starten.
 </div>
 
@@ -213,37 +213,34 @@ am Ende offen, bis eine Taste gedrückt wird.
 OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts): naechster Termin 2026-11-12
 OK            DZ Stadlau (knie_rechts): naechster Termin 2026-11-03
 ...
-FEHLER        MR DZ Baden (knie_rechts): fehler_weiterleitung
+OK            MR DZ Baden (knie_rechts): naechster Termin 2026-11-04
 FEHLER        CT/MR Institut Südost (Feldbach) (knie_rechts): nicht_erhoben
 ...
 FEHLER        Ambulatorium Döbling (knie_rechts): fehler_parsen
 ...
 OK            MR-CT DZ Horn (knie_rechts): naechster Termin 2026-11-13
-Zusammenfassung: 24 Abfragen - ok 21, keine_termine 0, fehler_weiterleitung 1, fehler_parsen 1, nicht_erhoben 1
+Zusammenfassung: 24 Abfragen - ok 22, keine_termine 0, fehler_weiterleitung 0, fehler_parsen 1, nicht_erhoben 1
 Ergebnisdatei: C:\Users\Anna\Documents\mrt-termin-monitor\data\2026-11-02_0900.csv
-OK MIT LUECKEN (3): Nicht alle Institute konnten erfasst werden.
+OK MIT LUECKEN (2): Nicht alle Institute konnten erfasst werden.
 Vermutlich war ein Institut kurz nicht erreichbar oder hat seine Webseite geaendert.
 Nichts zu tun; beim naechsten Lauf wird es erneut versucht.
 Log-Datei: C:\Users\Anna\Documents\mrt-termin-monitor\logs\run_2026-11-02_0900.log
 Drücken Sie eine beliebige Taste . . .</pre>
 
 <div class="card tip">
-  <h4>„OK MIT LUECKEN (3)“ ist derzeit der Normalfall</h4>
-  Drei Institute lassen sich zurzeit dauerhaft nicht messen. Das liegt an den Instituten,
+  <h4>„OK MIT LUECKEN (2)“ ist derzeit der Normalfall</h4>
+  Zwei Institute lassen sich zurzeit dauerhaft nicht messen. Das liegt an den Instituten,
   nicht am Programm oder am Computer – <strong>es ist nichts zu tun</strong>, auch nicht
   melden. Das Programm versucht es bei jedem Lauf von selbst wieder:
   <ul>
-    <li><strong>MR DZ Baden</strong>: Der Online-Terminpool ist erschöpft (Status
-      <code>fehler_weiterleitung</code>), oder die Seite antwortet nicht rechtzeitig (Status
-      <code>nicht_erhoben</code>). Diese Abfrage dauert deshalb spürbar länger.</li>
     <li><strong>CT/MR Institut Südost (Feldbach)</strong>: Das Sicherheitszertifikat der
       Webseite ist seit 30.&nbsp;Oktober 2026 abgelaufen; das Programm verbindet sich aus
       Sicherheitsgründen nicht (Status <code>nicht_erhoben</code>).</li>
     <li><strong>Ambulatorium Döbling</strong>: Das Buchungssystem antwortet mit einem
       Serverfehler (Status <code>fehler_parsen</code>).</li>
   </ul>
-  Erst wenn die Zahl in Klammern <em>größer</em> als 3 ist oder andere Institute als diese
-  drei mit <code>FEHLER</code> erscheinen, lohnt sich ein Blick in Abschnitt 3.
+  Erst wenn die Zahl in Klammern <em>größer</em> als 2 ist oder andere Institute als diese
+  zwei mit <code>FEHLER</code> erscheinen, lohnt sich ein Blick in Abschnitt 3.
 </div>
 
 <p>Die Zeilen bedeuten:</p>
@@ -252,7 +249,7 @@ Drücken Sie eine beliebige Taste . . .</pre>
     Termin gefunden.</li>
   <li><code>OK            DZ Simmering (knie_rechts): keine Termine</code> – die Seite hat
     funktioniert, bietet aber keinen Termin an („ausgebucht“).</li>
-  <li><code>FEHLER        MR DZ Baden (knie_rechts): fehler_weiterleitung</code> – dieses
+  <li><code>FEHLER        Ambulatorium Döbling (knie_rechts): fehler_parsen</code> – dieses
     Institut konnte nicht gemessen werden; am Ende steht der Status-Wert (Referenz).</li>
 </ul>
 <p>
@@ -299,7 +296,7 @@ Drücken Sie eine beliebige Taste . . .</pre>
     <td>–</td>
   </tr>
   <tr>
-    <td>OK MIT LUECKEN (3): Nicht alle Institute konnten erfasst werden.</td>
+    <td>OK MIT LUECKEN (2): Nicht alle Institute konnten erfasst werden.</td>
     <td>Vermutlich war ein Institut kurz nicht erreichbar oder hat seine Webseite geaendert.</td>
     <td>Nichts zu tun; beim naechsten Lauf wird es erneut versucht.</td>
   </tr>
@@ -561,7 +558,7 @@ dagegen nur die Zahl als „Letztes Ausführungsergebnis“:
 
 </main>
 
-<footer>mrt-termin-monitor 0.1.2 · Stand November 2026</footer>
+<footer>mrt-termin-monitor 0.1.3 · Stand November 2026</footer>
 
 </body>
 </html>
