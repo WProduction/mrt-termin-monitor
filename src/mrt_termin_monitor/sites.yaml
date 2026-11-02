@@ -185,6 +185,9 @@ dz_baden:
     lws:
       code: mrlw                          # Portal-Code aus der URL (exas=mrlw), nicht abgeleitet
       expected_title: MRT der Lendenwirbelsäule   # Live-Titel vom 2026-11-01; bei Abweichung fehler_parsen statt ok
+    mr_angio_nieren_km:
+      code: mra-niere                     # einziger Nierenangiographie-Eintrag; Portal bietet keine KM-Wahl
+      expected_title: MR-Angiographie der Nierenarterien   # Live-Titel vom 2026-11-01
 
 rainer_zwettl:
   name: Dr. Rainer Diagnostik, Zwettl
