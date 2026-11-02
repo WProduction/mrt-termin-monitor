@@ -73,6 +73,9 @@ dz_simmering:
     knie_rechts:
       code: mrknr
       expected_title: MR Knie             # voller Titel „MR Knie (links/rechts)“
+    lws:
+      code: mrlws                         # aus dem Deep-Link des Betreibers für Standort 11
+      expected_title: MR LWS              # voller Titel „MR LWS“; einziger Schutz gegen stilles Umhängen des Codes
 
 dz_urania:
   name: DZ Urania
