@@ -41,6 +41,9 @@ radiologicum_penzing:
     knie_rechts:
       code: mknie re                      # mit Leerzeichen, der Adapter percent-encodet
       expected_title: MR Kniegelenk       # matcht „… rechts“ und „… links oder rechts“
+    lws:
+      code: mlws
+      expected_title: MR Lendenwirbelsäule  # Portal-Titel mit echtem Umlaut (Datei als UTF-8 speichern)
 
 dz_stadlau:
   name: DZ Stadlau

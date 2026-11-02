@@ -71,19 +71,24 @@ def test_only_probes_site_via_its_adapter(monkeypatch, capsys) -> None:
 
     def fake_get(url: str, **kw) -> http.FetchResult:
         urls.append(url)
-        return http.FetchResult(url=url, status_code=200, content=skeleton)
+        content = skeleton
+        if "exas=mlws" in url:
+            # Ein Skelett für alle Codes: der Titel-Check verlangt je Untersuchung
+            # den eigenen Portal-Titel, sonst wird lws zu fehler_parsen.
+            lws_title = "MR Lendenwirbelsäule".encode()
+            content = skeleton.replace(b"MR Kniegelenk rechts", lws_title)
+        return http.FetchResult(url=url, status_code=200, content=content)
 
     monkeypatch.setattr(http, "get", fake_get)
     # Titel des Skeletts („MR Kniegelenk rechts“) passt zu radiologicum_penzing.
-    # Doppelt genannt, einmal abgefragt.
+    # Doppelt genannt, je Untersuchung genau einmal abgefragt.
     only = "radiologicum_penzing,radiologicum_penzing"
     assert cli.main(["run", "--only", only]) == ExitCode.OK
-    assert urls == [
-        (
-            "https://www.radiologicum.radiologie.at/AppointmentSearch/"
-            "directAppointmentSearch?exas=mknie%20re&Site=p"
-        )
-    ]
+    base = (
+        "https://www.radiologicum.radiologie.at/AppointmentSearch/"
+        "directAppointmentSearch?exas="
+    )
+    assert urls == [base + "mknie%20re&Site=p", base + "mlws&Site=p"]
     err = capsys.readouterr().err
     assert (
         "OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts):"
