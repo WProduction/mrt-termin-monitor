@@ -440,6 +440,8 @@ dok_schwaz:
   untersuchungen:
     knie_rechts:
       pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
+    lws:
+      pattern: Lendenwirbelsäule          # ein Katalogeintrag, dahinter zwei Terminarten (KOMBO, WSO); Adapter fragt beide ab
 
 # --- HGS PatApp/PatWeb: SOAP über POST an service_url, je Institut drei lesende
 # Aufrufe: GetShortLongTitles (Katalog, ohne Anmeldung) -> GetPatientTicket
