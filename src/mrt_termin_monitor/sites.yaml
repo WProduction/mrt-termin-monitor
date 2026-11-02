@@ -422,6 +422,8 @@ rz_kapfenberg:
       pattern: Knie rechts                # trifft den Rechts-Code, nicht seitenneutral
     lws:
       pattern: Lendenwirbelsäule          # nur Eintrag 481; „LWS“ träfe auch BWS+LWS und HWS+LWS
+    mr_angio_nieren_km:
+      pattern: Nierengefäße               # nur Eintrag 527; „Nieren“ träfe auch 496 „Nierenarterien“
 
 dok_schwaz:
   name: Kompetenzzentrum DOK Schwaz
