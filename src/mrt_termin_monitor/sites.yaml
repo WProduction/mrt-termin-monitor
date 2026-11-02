@@ -255,6 +255,14 @@ mr_bregenz:
       # („MRT Knie Privat rechts“) – ein auf Privat umgestellter Code fiele sonst
       # nicht auf.
       expected_title: MRT Knie rechts
+    lws:
+      code: mlws                          # Kassen-Code LWS (Gruppe 1288, site=bregrad)
+      # Privat-Zwilling ist „onmlws“ – „on“ heißt bei diesem Mandanten „privat“,
+      # nicht „online“. Maßgeblich ist der Code; gewählt ist der Kassen-Code.
+      # Voller Kassen-Titel. Der Privat-Zwilling heißt „MRT LWS Privat“ und enthält
+      # diesen Titel als Präfix – die Titelprüfung schützt hier also NICHT gegen
+      # einen auf Privat umgestellten Code.
+      expected_title: MRT LWS
 
 mr_feldkirch:
   name: MR Institut Feldkirch
