@@ -6,6 +6,11 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [1.0.0] – 2026-11-02
+
+Erster Messlauf über alle Untersuchungen: 50 Abfragen bei 24 Instituten, 48 davon mit
+Termin; die zwei Lücken stehen unter „Bekannte Lücken“.
+
 ### Added
 
 - Zwei neue Untersuchungen: MRT der Lendenwirbelsäule (`lws`) bei 22 Instituten und
@@ -25,6 +30,19 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
   Fehlermeldungen und das Benutzerhandbuch nennen als Empfänger der Log-Datei die Person,
   die das Programm betreut; der User-Agent nennt nur noch Version und Projekt-URL;
   `SECURITY.md` sagt, dass Meldungen nicht bearbeitet werden.
+- Benutzerhandbuch: Ein Lauf dauert jetzt etwa zehn Minuten; Beispiel und Status-Tabelle
+  zeigen die neuen Untersuchungen.
+
+### Bekannte Lücken
+
+- CT/MR Institut Südost (Feldbach): Das Zertifikat der Webseite ist abgelaufen; gemessen
+  wird weiter nur das Knie (`nicht_erhoben`). LWS und Nieren-Angiographie kommen dazu,
+  sobald das Portal wieder erreichbar ist.
+- Ambulatorium Döbling: Das Buchungssystem antwortet mit einem Serverfehler
+  (`fehler_parsen`); weitere Untersuchungen erst, wenn es wieder antwortet.
+- MR-Angiographie der Nierengefäße bei DZ Meidling und Röntgen Wien Nord: Das Portal führt
+  den Eintrag, zeigte in den bisherigen Probe-Läufen aber keinen freien Termin. Aufnahme,
+  sobald eine Probe einen Termin liefert.
 
 ## [0.1.3] – 2026-11-02
 
@@ -91,7 +109,8 @@ Erste Version für den Studienbetrieb.
   Wochen-Task (Montag 09:00) und `docs/benutzerhandbuch.html`.
 - Projektgerüst: Lizenz, Commit-Hooks, CI.
 
-[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/WProduction/mrt-termin-monitor/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.3...v1.0.0
 [0.1.3]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/WProduction/mrt-termin-monitor/compare/v0.1.0...v0.1.1

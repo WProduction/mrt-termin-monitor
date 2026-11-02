@@ -113,7 +113,8 @@
 
 <p>
 Das Programm schaut bei jedem Start auf den Online-Terminseiten von 24 Radiologie-Instituten
-nach, wann der nächste freie MRT-Termin für das rechte Knie ist – so, wie es eine Patientin
+nach, wann der nächste freie MRT-Termin ist – für das rechte Knie, die Lendenwirbelsäule und
+bei vier Instituten für eine MR-Angiographie der Nierengefäße –, so, wie es eine Patientin
 auch tun würde. Es bucht nie einen Termin. Pro Start entsteht eine Tabelle mit den
 Messwerten.
 </p>
@@ -121,7 +122,7 @@ Messwerten.
 <div class="card tip">
   <h4>Das Wichtigste in einem Satz</h4>
   Zum geplanten Messzeitpunkt die Verknüpfung „MRT-Termin-Monitor“ auf dem Desktop
-  doppelklicken, etwa fünf Minuten warten, die letzte Meldung lesen, eine Taste drücken –
+  doppelklicken, etwa zehn Minuten warten, die letzte Meldung lesen, eine Taste drücken –
   fertig.
 </div>
 
@@ -137,7 +138,7 @@ Benutzerkonto.
 <ol class="steps">
   <li>
     <strong>ZIP-Datei freigeben und entpacken.</strong> Auf der Release-Seite steht die
-    richtige Datei unter <em>Assets</em>: <code>mrt-termin-monitor-0.1.3.zip</code> (etwa 9 MB),
+    richtige Datei unter <em>Assets</em>: <code>mrt-termin-monitor-1.0.0.zip</code> (etwa 9 MB),
     nicht <em>Source code</em> – dort fehlen die Programmpakete. Die heruntergeladene Datei
     mit der rechten Maustaste anklicken →
     <em>Eigenschaften</em> → unten das Häkchen <em>Zulassen</em> setzen → <em>OK</em>.
@@ -169,7 +170,7 @@ Benutzerkonto.
 <pre class="console">Installation mrt-termin-monitor
 
 Schritt 1 von 3: Programm wird installiert ...
-mrt-termin-monitor 0.1.3
+mrt-termin-monitor 1.0.0
 Schritt 2 von 3: Verknuepfung auf dem Desktop wird angelegt ...
 Schritt 3 von 3: Einrichtung ...
 Einrichtung mrt-termin-monitor
@@ -191,7 +192,7 @@ Danach kann der entpackte Ordner weg; das Programm braucht ihn nicht mehr.
 <div class="card warnbox">
   <h4>„FEHLER: Neben install.cmd fehlt der Ordner "wheels" mit den Programmpaketen.“</h4>
   Es wurde die falsche Datei heruntergeladen, meist <em>Source code (zip)</em>. Auf der
-  Release-Seite unter <em>Assets</em> die Datei <code>mrt-termin-monitor-0.1.3.zip</code>
+  Release-Seite unter <em>Assets</em> die Datei <code>mrt-termin-monitor-1.0.0.zip</code>
   laden, freigeben, entpacken und <code>install.cmd</code> im entpackten Ordner starten.
 </div>
 
@@ -206,7 +207,7 @@ Danach kann der entpackte Ordner weg; das Programm braucht ihn nicht mehr.
 <p>
 Doppelklick auf die Verknüpfung <strong>MRT-Termin-Monitor</strong> auf dem Desktop. Ein
 schwarzes Fenster öffnet sich, das Programm fragt nichts und arbeitet die Institute der
-Reihe nach ab. Ein Lauf dauert etwa <strong>fünf Minuten</strong>, weil das Programm
+Reihe nach ab. Ein Lauf dauert etwa <strong>zehn Minuten</strong>, weil das Programm
 zwischen zwei Abfragen beim selben Institut absichtlich Pausen macht. Das Fenster bleibt
 am Ende offen, bis eine Taste gedrückt wird.
 </p>
@@ -218,12 +219,15 @@ OK            MR-CT Wien-West / Radiologicum Penzing (knie_rechts): naechster Te
 OK            DZ Stadlau (knie_rechts): naechster Termin 2026-11-03
 ...
 OK            MR DZ Baden (knie_rechts): naechster Termin 2026-11-04
+OK            MR DZ Baden (lws): naechster Termin 2026-11-15
+OK            MR DZ Baden (mr_angio_nieren_km): naechster Termin 2026-11-25
 FEHLER        CT/MR Institut Südost (Feldbach) (knie_rechts): nicht_erhoben
 ...
 FEHLER        Ambulatorium Döbling (knie_rechts): fehler_parsen
 ...
 OK            MR-CT DZ Horn (knie_rechts): naechster Termin 2026-11-13
-Zusammenfassung: 24 Abfragen - ok 22, keine_termine 0, fehler_weiterleitung 0, fehler_parsen 1, nicht_erhoben 1
+OK            MR-CT DZ Horn (lws): naechster Termin 2026-11-24
+Zusammenfassung: 50 Abfragen - ok 48, keine_termine 0, fehler_weiterleitung 0, fehler_parsen 1, nicht_erhoben 1
 Ergebnisdatei: C:\Users\Anna\Documents\mrt-termin-monitor\data\2026-11-02_0900.csv
 OK MIT LUECKEN (2): Nicht alle Institute konnten erfasst werden.
 Vermutlich war ein Institut kurz nicht erreichbar oder hat seine Webseite geaendert.
@@ -481,7 +485,12 @@ verbunden, liegt er unter <code>OneDrive\Dokumente</code>.
 
 <h3>Status-Werte in der Ergebnistabelle</h3>
 
-<p>Jede Zeile der Tabelle ist eine Messung: ein Institut, ein Lauf.</p>
+<p>
+Jede Zeile der Tabelle ist eine Messung: ein Institut, eine Untersuchung, ein Lauf. Die
+Spalte <code>untersuchung</code> nennt den Fall: <code>knie_rechts</code>,
+<code>lws</code> (Lendenwirbelsäule) oder <code>mr_angio_nieren_km</code>
+(MR-Angiographie der Nierengefäße).
+</p>
 
 <div class="tablewrap">
 <table>
@@ -560,7 +569,7 @@ dagegen nur die Zahl als „Letztes Ausführungsergebnis“:
 
 </main>
 
-<footer>mrt-termin-monitor 0.1.3 · Stand November 2026</footer>
+<footer>mrt-termin-monitor 1.0.0 · Stand November 2026</footer>
 
 </body>
 </html>
