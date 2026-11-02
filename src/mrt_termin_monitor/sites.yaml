@@ -129,20 +129,17 @@ dz_baden:
   name: MR DZ Baden
   adapter: xrweb
   abrechnung: kombiniert
-  # Bei erschöpftem Pool antwortet der Endpunkt erst nach rund 32 s mit der
-  # Weiterleitungsseite; mit 30 s wäre das „nicht erhoben“ statt „Weiterleitung“.
+  # Die Weiterleitungsseite (kein Online-Termin oder ungültiger Code) kommt hier
+  # erst nach rund 32 s; mit 30 s wäre das „nicht erhoben“ statt „Weiterleitung“.
   timeout_s: 45
   xrweb:
     host: webportal.dzbaden.at
     site_param: b
     day_table_columns: 2
-  # Titel und Spaltenzahl sind Annahmen: bisher kam nur die Weiterleitungsseite
-  # zurück. Bei der ersten Antwort mit Tages-Tabelle gegen den Live-Titel prüfen;
-  # weicht er ab, liefert der Block fehler_parsen statt ok.
   untersuchungen:
     knie_rechts:
-      code: '2244'                        # gequotet: der Code ist ein String
-      expected_title: MRT Knie
+      code: mrknr                         # Portal-Code aus der URL (exas=mrknr), nicht abgeleitet
+      expected_title: MRT des rechten Kniegelenkes   # Live-Titel vom 2026-11-01
 
 rainer_zwettl:
   name: Dr. Rainer Diagnostik, Zwettl
