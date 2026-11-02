@@ -6,8 +6,21 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- Zwei neue Untersuchungen: MRT der Lendenwirbelsäule (`lws`) bei 22 Instituten und
+  MR-Angiographie der Nierengefäße (`mr_angio_nieren_km`) bei 4 Instituten (MR DZ Baden,
+  Diagnostikum Linz, Diagnostikum Graz Süd-West, Radiologisches Zentrum Kapfenberg). Jede
+  neue Zelle hat in einer Live-Probe einen Termin geliefert. Kein Portal bietet für diese
+  Fälle eine Kontrastmittel-Wahl; gemessen wird der neutrale Eintrag. Bei Instituten ohne eigenen
+  LWS-Eintrag zählt der Sammeleintrag „Wirbelsäule“.
+
 ### Changed
 
+- Radiologie Waidhofen: Die Titelprüfung des Knie-Falls verlangt jetzt „MRT Knie rechts“.
+- Benutzerhandbuch: Die Einrichtung fragt nach der Platzhalter-Nummer (zehnmal die
+  Ziffer 1), die alle drei PatApp-Portale für die reine Terminabfrage akzeptieren, statt
+  nach der eigenen Sozialversicherungsnummer.
 - Die Kontaktadresse ist überall entfernt, weil das Projekt keinen Support bietet:
   Fehlermeldungen und das Benutzerhandbuch nennen als Empfänger der Log-Datei die Person,
   die das Programm betreut; der User-Agent nennt nur noch Version und Projekt-URL;
