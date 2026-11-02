@@ -335,6 +335,8 @@ diagnostikum_graz_suedwest:
       code: mknr
     lws:
       code: mlws                          # Portalcode „MRT der Lendenwirbelsäule“
+    mr_angio_nieren_km:
+      code: mani                          # einziger Portaleintrag „MR Angiographie der Nierenarterien“; KM nicht wählbar
 
 # --- MiraNext (Patientenportal mit JSON-API unter /api/booking): je Untersuchung
 # zwei GETs. Erst die Service-Zuordnung per Suchbegriff – die Zuordnungs-ID wird zur
