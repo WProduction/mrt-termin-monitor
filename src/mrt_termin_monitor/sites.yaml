@@ -127,6 +127,9 @@ diagnosehaus_3:
     knie_rechts:
       code: mrknr
       expected_title: MR Knie
+    lws:
+      code: mrlws
+      expected_title: MR LWS              # Portal druckt den Titel zweimal (Untersuchungen:/Information:)
 
 hansson_diagnostik:
   name: Hansson Diagnostik
