@@ -305,6 +305,8 @@ dz_meidling:
   untersuchungen:
     knie_rechts:
       code: mknr                          # Rechts-Code
+    lws:
+      code: mlws                          # „MRT der Lendenwirbelsäule“
 
 diagnostikum_linz:
   name: Diagnostikum Linz
