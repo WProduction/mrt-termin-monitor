@@ -160,6 +160,12 @@ radiologie_waidhofen:
     knie_rechts:
       code: knr-mr
       expected_title: MRT Knie rechts
+    lws:
+      code: lws-mr
+      # Präfix statt Volltitel „MRT Lendenwirbelsäule (LWS)“: eine kosmetische
+      # Änderung der Klammer soll kein fehler_parsen auslösen; der Präfix ist
+      # im Katalog eindeutig.
+      expected_title: MRT Lendenwirbelsäule
 
 dz_baden:
   name: MR DZ Baden
