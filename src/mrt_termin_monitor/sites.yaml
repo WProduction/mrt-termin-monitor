@@ -107,6 +107,14 @@ imagin_floridsdorf:
     knie_rechts:
       code: mrknieonline                  # seitenneutral
       expected_title: MRT Knie
+    lws:
+      # Sammelcode Wirbelsäule: HWS, BWS und LWS teilen sich einen Eintrag, den
+      # ein LWS-Patient genau so buchen müsste. Im Code steht die Ziffer 1 („mr1ws“),
+      # nicht der Buchstabe l.
+      code: mr1wsonline
+      # Bewusst nur der Titel-Anfang: der volle Titel trägt unregelmäßige
+      # Leerzeichen („(HWS/ BWS /LWS)“), die das Portal jederzeit glätten könnte.
+      expected_title: MRT Region der Wirbelsäule
 
 diagnosehaus_3:
   name: Diagnosehaus 3
