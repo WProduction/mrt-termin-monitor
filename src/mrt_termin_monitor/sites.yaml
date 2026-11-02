@@ -89,6 +89,11 @@ dz_urania:
     knie_rechts:
       code: mrknieonline                  # seitenneutral
       expected_title: MRT Knie
+    lws:
+      # Sammelcode Wirbelsäule: ein Eintrag für die ganze WS-Region, HWS/BWS/LWS
+      # teilen ihn – ein LWS-Patient müsste im Portal genau diesen Eintrag wählen.
+      code: mr1wsonline                   # „mr“ + Ziffer „1“ + „wsonline“, nicht Buchstabe „l“
+      expected_title: MRT Region der Wirbelsäule
 
 imagin_floridsdorf:
   name: imagin Floridsdorf
