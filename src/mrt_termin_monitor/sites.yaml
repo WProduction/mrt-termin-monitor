@@ -462,6 +462,8 @@ roentgen_wien_nord:
   untersuchungen:
     knie_rechts:
       pattern: Knie                       # trifft nur „MR-Knie“; der Katalog kennt kein re/li
+    lws:
+      pattern: LWS                        # trifft nur „MR-LWS“; „WS“ träfe auch „MR-WS“
 
 rachinger_linz:
   name: Dr. Rachinger, Linz
