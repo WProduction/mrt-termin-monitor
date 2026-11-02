@@ -479,6 +479,11 @@ rachinger_linz:
       # Trifft nur „Kniegelenk“ (seitenneutral); der Privat-Eintrag desselben
       # Katalogs hat die Modalität MRP und fällt durch den MR-Filter.
       pattern: Knie
+    lws:
+      # Trifft nur mlws „Lendenwirbelsäule“; „LWS + SIG“ (mls) und
+      # „Wirbelsäule gesamt“ (mws) führen das Wort nicht, der Privat-Zwilling
+      # pmlws hat Modalität MRP und fällt durch den MR-Filter.
+      pattern: Lendenwirbel
 
 mr_ct_horn:
   name: MR-CT DZ Horn
