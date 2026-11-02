@@ -91,6 +91,11 @@ def csv_rows(start: datetime = START) -> list[dict[str, str]]:
         return list(csv.DictReader(f, delimiter=csv_output.CSV_DELIMITER))
 
 
+def institut_ids(start: datetime = START) -> list[str]:
+    """Institute der CSV in Auftrittsreihenfolge, unabhängig von der Zeilenzahl je Institut."""
+    return list(dict.fromkeys(row["institut_id"] for row in csv_rows(start)))
+
+
 def test_full_run_writes_csv_and_archive(monkeypatch, portal, capsys) -> None:
     sites = load_sites()
     assert main_at(monkeypatch, START) == ExitCode.OK
@@ -123,7 +128,9 @@ def test_only_with_failing_site_is_partial(monkeypatch, portal, capsys) -> None:
     only = "dz_stadlau,dz_simmering,dz_stadlau"
     assert main_at(monkeypatch, START, "--only", only) == ExitCode.PARTIAL
     assert portal.calls == ["dz_stadlau", "dz_simmering"]
-    assert [row["institut_id"] for row in csv_rows()] == ["dz_stadlau", "dz_simmering"]
+    # Je Institut können mehrere Untersuchungen konfiguriert sein (eine Zeile je
+    # Untersuchung) – geprüft wird die Reihenfolge der Institute, nicht die Anzahl.
+    assert institut_ids() == ["dz_stadlau", "dz_simmering"]
     err = capsys.readouterr().err
     assert "FEHLER        " in err and ": fehler_parsen" in err
     assert "OK MIT LUECKEN (1):" in err
@@ -143,7 +150,7 @@ def test_budget_exceeded_keeps_rows_and_skips_rest(monkeypatch, portal, capsys) 
     argv = ("--only", "dz_stadlau,dz_simmering,dz_urania")
     assert main_at(monkeypatch, START, *argv) == ExitCode.UNEXPECTED
     assert portal.calls == ["dz_stadlau", "dz_simmering"]
-    assert [row["institut_id"] for row in csv_rows()] == ["dz_stadlau"]
+    assert institut_ids() == ["dz_stadlau"]
     err = capsys.readouterr().err
     assert err.count("UEBERSPRUNGEN ") == 2
     assert "request budget" not in err

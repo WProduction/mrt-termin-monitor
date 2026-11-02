@@ -103,7 +103,7 @@ def test_run_logs_get_and_post_requests_per_site(monkeypatch, capsys) -> None:
         # Wie iris: ein POST (Session) und mehrere GETs.
         counts["post"] += 1
         counts["get"] += 4
-        (exam,) = site.exams
+        # Eine Zeile je konfigurierter Untersuchung – die Anzahl ist hier egal.
         return [
             Measurement(
                 run_start=run_start,
@@ -114,6 +114,7 @@ def test_run_logs_get_and_post_requests_per_site(monkeypatch, capsys) -> None:
                 billing=site.billing,
                 status=Status.NO_SLOTS,
             )
+            for exam in site.exams
         ]
 
     # importlib ist global – nur den Adapter-Import umbiegen, alles andere echt.
