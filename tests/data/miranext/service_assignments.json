@@ -3,7 +3,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa01",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk rechts"},
+    "service": {"name": "MR Kniegelenk rechts", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "MR",
       "active": true,
@@ -15,7 +15,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa02",
     "active": true,
     "adjustable_buffer_time": 5,
-    "service": {"name": "MR Kniegelenk rechts"},
+    "service": {"name": "MR Kniegelenk rechts", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "PMR-S",
       "active": true,
@@ -27,7 +27,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa03",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk rechts"},
+    "service": {"name": "MR Kniegelenk rechts", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "PMR-SF",
       "active": true,
@@ -39,7 +39,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa04",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk links"},
+    "service": {"name": "MR Kniegelenk links", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "MR",
       "active": true,
@@ -51,7 +51,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa05",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk bds."},
+    "service": {"name": "MR Kniegelenk bds.", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "MR",
       "active": true,
@@ -63,7 +63,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa06",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk, je Seite"},
+    "service": {"name": "MR Kniegelenk, je Seite", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "MR",
       "active": true,
@@ -75,7 +75,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa07",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "CT Knie rechts"},
+    "service": {"name": "CT Knie rechts", "active": true, "is_patient_online_bookable": true},
     "device": {
       "device_name": "PCCT",
       "active": true,
@@ -87,7 +87,7 @@
     "id": "00000000-0000-4000-8000-aaaaaaaaaa08",
     "active": true,
     "adjustable_buffer_time": 0,
-    "service": {"name": "MR Kniegelenk rechts"},
+    "service": {"name": "MR Kniegelenk rechts", "active": true, "is_patient_online_bookable": true},
     "device": null
   }
 ]

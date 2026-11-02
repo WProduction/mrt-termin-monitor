@@ -70,6 +70,17 @@ def test_not_online_bookable_device_is_skipped() -> None:
     assert _resolve(_catalog(), device="PMR-SF") is None
 
 
+@pytest.mark.parametrize("flag", ["active", "is_patient_online_bookable"])
+def test_service_without_flag_is_skipped(flag: str) -> None:
+    # Der Katalog führt auch Leistungen, die auf einem buchbaren Gerät stehen, aber
+    # selbst nicht online buchbar oder nur aus dem Standardkatalog vererbt sind
+    # (``service.active`` false); ohne Service-Filter würde ihr Datum still als
+    # ``ok`` gemeldet.
+    entries = _catalog()
+    entries[0]["service"][flag] = False
+    assert _resolve(entries) is None
+
+
 def test_other_modality_is_skipped() -> None:
     assert _resolve(_catalog(), name="CT Knie rechts", device="PCCT") is None
 

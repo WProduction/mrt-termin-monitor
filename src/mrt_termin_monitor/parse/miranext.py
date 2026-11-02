@@ -72,10 +72,18 @@ def resolve_service(
 
     Filter je Eintrag: Name exakt gleich (kein Teilstring – „MR Kniegelenk bds.“
     und „MR Kniegelenk, je Seite“ sind andere Leistungen), Modalität MRT, Gerät
-    online buchbar und aktiv, Zuordnung aktiv, Gerätename exakt gleich. Der
-    Gerätename ist der Kasse/Privat-Schalter: dieselbe Untersuchung steht mit
-    eigener ID auch auf dem Privatgerät, ohne Geräte-Filter würde still der
-    falsche Pool gemessen.
+    online buchbar und aktiv, Leistung online buchbar und aktiv, Zuordnung
+    aktiv, Gerätename exakt gleich. Der Gerätename ist der Kasse/Privat-Schalter:
+    dieselbe Untersuchung steht mit eigener ID auch auf dem Privatgerät, ohne
+    Geräte-Filter würde still der falsche Pool gemessen.
+
+    Der Katalog hat zwei Schichten: die Einträge des Instituts und ein vererbter
+    Standardkatalog, dessen Leistungen mit ``service.active`` false mitgeliefert
+    werden. Beide stehen mit aktiver Zuordnung auf dem buchbaren Kassengerät;
+    ebenso Institutsleistungen, die das Portal nicht online anbietet
+    (``service.is_patient_online_bookable`` false). Nur die Service-Flags
+    trennen das – ohne sie meldete die Slot-Abfrage einer solchen Leistung ein
+    Datum, das kein Patient online buchen kann.
 
     Args:
         payload: Roh-JSON der Katalog-Suche (Liste von Zuordnungen).
@@ -106,6 +114,11 @@ def resolve_service(
             continue
         if not entry.get("active") or not dev.get("active"):
             continue  # stillgelegte Zuordnungen und Geräte nicht mitmessen
+        # Leistungs-Flags: der vererbte Standardkatalog (active false) und nicht
+        # online angebotene Leistungen stehen sonst mit Datum im Ergebnis.
+        service = entry.get("service") or {}
+        if not service.get("active") or not service.get("is_patient_online_bookable"):
+            continue
         if dev.get("device_name") != device:
             continue
         assignment_id = entry.get("id")
