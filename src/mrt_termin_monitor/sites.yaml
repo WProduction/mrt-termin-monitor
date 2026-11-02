@@ -276,6 +276,15 @@ mr_feldkirch:
       code: onmKnie                       # Binnengroßschreibung wie im Katalog
       # Der Mandant hängt Lauftext an den Namen; nur der stabile Anfang.
       expected_title: MRT Knie
+    lws:
+      # Sammelcode Wirbelsäule: ein Sammel-Eintrag für die GANZE Wirbelsäule;
+      # einen LWS-eigenen Eintrag gibt es im Katalog nicht. Ein LWS-Patient
+      # müsste genau diesen Eintrag wählen, daher zählt er für den Fall –
+      # gemessen wird aber der Wirbelsäulen-Pool insgesamt.
+      # Das Präfix „on“ heißt bei diesem Mandanten „online“, nicht „privat“.
+      code: onmws
+      # Der Mandant hängt Lauftext an den Namen; nur der stabile Anfang.
+      expected_title: MRT Wirbelsäule
 
 # --- klinix (Diagnostikum-Gruppe): ein anonymer GET je Untersuchung auf
 # /services/klinixservice/api/public/appointment-slot/first-available-slot-time?exas=<code>.
