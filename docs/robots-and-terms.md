@@ -54,6 +54,15 @@ Crawl-Regel; nach RFC 9309 darf ein Client dann zugreifen.
   sendet je Lauf nur einen
   Request an diesen Host. Wird der Zugriff abgelehnt, gibt es keinen
   Ausweichweg: Das Institut wird dann nicht gemessen.
+  Seit Wochen antwortet `api.doctena.at` auf jeden Request mit HTTP 522
+  (Cloudflare: keine Antwort vom Ursprungsserver; zuletzt geprüft 2026-11-01
+  und 2026-11-02), das Institut steht deshalb als Fehler in der CSV. Die
+  Kalenderseiten auf `www.doctena.at` liefern für den User-Agent des Tools
+  HTTP 403 mit einer Cloudflare-Prüfseite („Just a moment…“). Das ist eine
+  Schutzmaßnahme und wird nicht umgangen: Der User-Agent bleibt, einen
+  Browser-Umweg gibt es nicht. Besuchsgründe weiterer Untersuchungen lassen
+  sich daher nicht aus dem Kalender ermitteln. Prüfung: ein GET je Lauf;
+  solange er 522 liefert, bleibt die Lücke.
 - **Radiologisches Zentrum Kapfenberg:** Das Impressum untersagt, Texte, Fotos
   und Grafiken der Website zu vervielfältigen oder in Datenbanken zu speichern.
   Das Tool speichert davon nichts, sondern nur das Datum des nächsten freien
@@ -65,6 +74,36 @@ Crawl-Regel; nach RFC 9309 darf ein Client dann zugreifen.
 - **Diagnostikum-Gruppe:** Die `robots.txt` von `diagnostikum.at` wirkt wie eine
   unveränderte Framework-Vorlage, denn die Sitemap-Zeile zeigt auf einen
   Platzhalter-Host. Ihr `Allow: /` ist daher keine bewusste Erlaubnis.
+- **CT/MR Institut Südost, Feldbach:** Das TLS-Zertifikat von
+  `www.suedost.radiologie.at` ist am 2026-10-30 abgelaufen und wurde nicht
+  erneuert; zudem liefert der Server das Zwischenzertifikat nicht mit. Jeder
+  Request endet mit `CERTIFICATE_VERIFY_FAILED`, das Institut gilt als nicht
+  erhoben. Das Tool schaltet die Zertifikatsprüfung nicht ab und pinnt kein
+  Zertifikat. Wiedervorlage: erstmals 2026-11-15 mit `openssl s_client
+  -connect www.suedost.radiologie.at:443 -servername www.suedost.radiologie.at`
+  (Gültigkeit und vollständige Kette), danach vor jeder Konfigurationsänderung
+  und mindestens alle 30 Tage. Kehrt das Portal zurück, werden die
+  Untersuchungscodes neu aus dem Katalog bestimmt, nicht aus alten Annahmen
+  übernommen.
+- **XR-WEB, Katalogroute:** Die Route `/AppointmentSearch/AppointmentMultiselect`
+  listet bei manchen Mandanten den Untersuchungskatalog, antwortet bei vielen
+  aber mit 302 auf das Kontaktformular `PatientRequest`. Das Tool ruft diese
+  Route nie auf und sendet keine Formulare. Die Untersuchungscodes wurden
+  einmalig von Hand aus dem öffentlich sichtbaren Katalog bestimmt: aus dieser
+  Route, wo sie ihn liefert, sonst aus der Terminseite des Instituts
+  (Auswahlliste, Kacheln oder eingebetteter Katalog). Je Lauf bleibt es bei
+  einem GET je Untersuchung auf `directAppointmentSearch`.
+- **patapp (Röntgen Wien Nord, Dr. Rachinger, MR-CT DZ Horn):** Das Portal
+  zeigt Termine erst nach einem Patienten-Ticket, das es gegen eine
+  Sozialversicherungsnummer ausstellt. Die Studie verwendet dafür statt einer
+  echten Nummer einen Platzhalter aus zehn Einsen; alle drei Portale
+  akzeptieren ihn als Test-Ticket (geprüft 2026-11-01). Name und
+  Mobilnummer, die die Anmeldung optional mitschickt, bleiben dabei leer. Mit
+  dem Ticket wird nur die Terminliste gelesen: keine Buchung, keine
+  Reservierung. Je Lauf und Institut wird genau ein Ticket geholt. Lehnt ein
+  Portal den Platzhalter ab, steht das Institut als `nicht_erhoben` mit dem
+  Hinweis `login rejected` in der CSV; eine echte Sozialversicherungsnummer
+  ist kein Ausweichweg.
 
 ## Gesperrte Hosts
 
