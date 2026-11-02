@@ -27,17 +27,17 @@ import certifi
 import requests
 
 from mrt_termin_monitor import __version__
-from mrt_termin_monitor.messages import KONTAKT_MAIL
 
 log = logging.getLogger(__name__)
 
-# Sprechender User-Agent mit Kontakt: ein Institut, das die Abrufe im Server-Log
-# sieht, soll ohne Recherche erkennen, wer abfragt und wen es erreicht. Nur ASCII,
-# weil HTTP-Header Latin-1 sind.
+# Sprechender User-Agent mit Projekt-URL: ein Institut, das die Abrufe im Server-Log
+# sieht, soll ohne Recherche erkennen, wer abfragt und wozu. Bewusst ohne
+# Kontaktadresse – das Projekt bietet keinen Support. Nur ASCII, weil HTTP-Header
+# Latin-1 sind.
 USER_AGENT = (
     f"mrt-termin-monitor/{__version__} "
     "(+https://github.com/WProduction/mrt-termin-monitor; "
-    f"scientific study of MRI appointment availability; contact: {KONTAKT_MAIL})"
+    "scientific study of MRI appointment availability)"
 )
 
 # Mindestabstand in Sekunden zwischen zwei Requests an denselben Host – gilt für

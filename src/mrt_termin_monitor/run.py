@@ -217,7 +217,6 @@ def _summary(
                     name=m.site_name,
                     untersuchung=row["untersuchung"],
                     letzter=last_run,
-                    kontakt=messages.KONTAKT_MAIL,
                 )
             )
     counts = Counter(m.to_row()["status"] for m in rows)

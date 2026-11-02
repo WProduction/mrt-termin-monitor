@@ -31,13 +31,15 @@ def test_console_text_is_ascii(code: ExitCode) -> None:
     assert text.isascii()
 
 
-def test_error_render_has_three_parts_log_and_contact() -> None:
+def test_error_render_has_three_parts_and_log_without_contact() -> None:
     log, cred = Path("C:/x/run.log"), Path("C:/y/credentials.yaml")
     lines = messages.render(ExitCode.CONFIG_ERROR, log, cred).splitlines()
     assert lines[0].startswith("FEHLER: ")
     assert str(cred) in lines[2]
     assert str(log) in lines[3]
-    assert messages.KONTAKT_MAIL in lines[4]
+    # Kein Support: keine Kontaktzeile, keine Mail-Adresse im Fehlertext.
+    assert len(lines) == 4
+    assert all("@" not in line for line in lines)
 
 
 def test_partial_shows_gap_count() -> None:

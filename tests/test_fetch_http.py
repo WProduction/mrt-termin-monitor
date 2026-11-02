@@ -25,7 +25,6 @@ from mrt_termin_monitor.fetch import (
 )
 from mrt_termin_monitor.fetch import http as fetch_http
 from mrt_termin_monitor.fetch import post as fetch_post
-from mrt_termin_monitor.messages import KONTAKT_MAIL
 
 README = Path(__file__).parents[1] / "README.md"
 URL = "https://dh3.radiologie.at/AppointmentSearch/directAppointmentSearch?exas=mrknr"
@@ -98,12 +97,16 @@ def test_get_returns_url_status_bytes() -> None:
     assert result.content == b"<html>MR Kniegelenk</html>"
 
 
-def test_user_agent_names_version_and_contact_and_extra_headers_win() -> None:
+def test_user_agent_names_version_and_repo_and_extra_headers_win() -> None:
     sess = FakeSession([FakeResponse(200)])
     get(URL, session=sess, delay=0, extra_headers={"Referer": "https://example.at/"})
     headers = sess.calls[0][1]["headers"]
     assert headers["User-Agent"].startswith(f"mrt-termin-monitor/{__version__} ")
-    assert KONTAKT_MAIL in headers["User-Agent"]
+    assert (
+        "+https://github.com/WProduction/mrt-termin-monitor;" in headers["User-Agent"]
+    )
+    # Kein Support: der User-Agent nennt keine Kontaktadresse.
+    assert "contact" not in headers["User-Agent"]
     assert headers["User-Agent"].isascii()  # HTTP-Header sind Latin-1
     assert headers["Referer"] == "https://example.at/"
 

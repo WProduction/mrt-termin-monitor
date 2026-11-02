@@ -6,6 +6,13 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- Die Kontaktadresse ist überall entfernt, weil das Projekt keinen Support bietet:
+  Fehlermeldungen und das Benutzerhandbuch nennen als Empfänger der Log-Datei die Person,
+  die das Programm betreut; der User-Agent nennt nur noch Version und Projekt-URL;
+  `SECURITY.md` sagt, dass Meldungen nicht bearbeitet werden.
+
 ## [0.1.3] – 2026-11-02
 
 ### Fixed

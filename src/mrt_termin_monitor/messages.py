@@ -12,11 +12,6 @@ from pathlib import Path
 
 from mrt_termin_monitor.errors import ExitCode
 
-# ponytail: Platzhalter (empfängt keine Mails), für 0.1.0 bewusst belassen. Vor 1.0.0
-# durch eine echte Support-Adresse ersetzen und überall nachziehen, wo die Adresse
-# wörtlich steht (per Suche im Repo).
-KONTAKT_MAIL = "72034176+WProduction@users.noreply.github.com"
-
 
 @dataclass(frozen=True)
 class Message:
@@ -87,7 +82,8 @@ ZEILE_UEBERSPRUNGEN = "UEBERSPRUNGEN {name}"
 WARNUNG_KEINE_TERMINE = (
     "WARNUNG: {name} ({untersuchung}) meldet keine Termine, beim letzten Lauf"
     " ({letzter}) gab es noch einen. Vermutlich hat das Institut seine Webseite"
-    " geaendert; bitte die Log-Datei an {kontakt} schicken, wenn das so bleibt."
+    " geaendert; bitte die Log-Datei an die Person schicken, die das Programm"
+    " betreut, wenn das so bleibt."
 )
 ZUSAMMENFASSUNG = "Zusammenfassung: {zeilen} Abfragen - {zaehlung}"
 ERGEBNIS_DATEI = "Ergebnisdatei: {path}"
@@ -126,17 +122,20 @@ def render(code: ExitCode, log_file: Path, credentials: Path, gaps: int = 0) -> 
 
     Returns:
         Mehrzeiliger Text ohne abschließenden Zeilenumbruch. Bei Fehlern:
-        ``FEHLER: was`` / warum / tun / Log-Pfad / Kontakt-Mail.
+        ``FEHLER: was`` / warum / tun / Log-Pfad. Bewusst ohne Kontaktadresse:
+        das Projekt bietet keinen Support; die Log-Datei geht an die Person, die
+        das Programm vor Ort betreut.
     """
     msg = MESSAGES[code]
     lines = [msg.was, msg.warum, msg.tun]
     if code in ERROR_CODES:
         lines[0] = f"FEHLER: {lines[0]}"
-        lines += ["oder die Log-Datei {log}", "an {kontakt} schicken."]
+        lines += [
+            "oder die Log-Datei {log} an die Person schicken, die das Programm betreut."
+        ]
     fields = {
         "credentials": credentials,
         "gaps": gaps,
         "log": log_file,
-        "kontakt": KONTAKT_MAIL,
     }
     return "\n".join(line.format(**fields) for line in lines if line)

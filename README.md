@@ -37,7 +37,7 @@ und werden nicht per Config gelockert:
   sperrende oder stornierende Operationen sind im Code nicht aufrufbar. Es wird nie
   ein Termin gebucht oder reserviert.
 - **Erkennbar:** jeder Request trägt den User-Agent
-  `mrt-termin-monitor/<version> (+<repo-url>; …; contact: <mail>)` mit Kontaktadresse.
+  `mrt-termin-monitor/<version> (+<repo-url>; …)` mit Projekt-URL.
 - **Sperren respektiert:** Untersagt ein Institut in seiner `robots.txt`
   automatisierte Abrufe, stehen alle seine Hosts in `BLOCKED_HOSTS` und werden nie
   angefragt. Es gibt keine Umgehung von

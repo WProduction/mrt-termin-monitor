@@ -9,7 +9,7 @@ zur privaten bzw. nicht-kommerziellen Nutzung durchgesehen.
 
 Was das Tool daraus macht, steht im README unter „Responsible use“: Es sendet nur
 lesende Requests mit mindestens 10 Sekunden Abstand je Host und einem
-User-Agent mit Kontaktadresse. Hosts mit Sperre fragt es nie an, und
+User-Agent mit Projekt-URL. Hosts mit Sperre fragt es nie an, und
 Schutzmaßnahmen umgeht es nicht.
 
 „404“ heißt: Der Host liefert keine `robots.txt`. Damit gibt es dort keine

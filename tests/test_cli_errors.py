@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from mrt_termin_monitor import cli, messages, paths, run
+from mrt_termin_monitor import cli, paths, run
 from mrt_termin_monitor.errors import ExitCode, NoSiteReachableError, OutputError
 from mrt_termin_monitor.fetch import http, post
 from mrt_termin_monitor.model import Measurement, Status
@@ -34,7 +34,7 @@ def test_broken_credentials_exit_2_without_console_traceback(capsys) -> None:
     assert err.startswith("FEHLER: Die Konfiguration konnte nicht gelesen werden.")
     assert str(paths.credentials_file()) in err
     assert str(paths.log_dir()) in err
-    assert messages.KONTAKT_MAIL in err
+    assert "@" not in err  # kein Support, keine Kontaktadresse
     assert "Traceback" not in err
     text = only_log()
     assert "Traceback" in text and "ConfigError" in text
