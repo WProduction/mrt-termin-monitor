@@ -56,6 +56,11 @@ dz_stadlau:
     knie_rechts:
       code: mrknieonline                  # seitenneutraler Sammelcode
       expected_title: MRT Knie
+    lws:
+      # Sammelcode Wirbelsäule: Oberbegriff derselben Region – ein Patient mit
+      # LWS-Zuweisung bucht im Portal genau diesen Eintrag.
+      code: mr1wsonline                   # Ziffer 1, nicht Buchstabe l: „1ws“ = eine Wirbelsäulenregion
+      expected_title: MRT Wirbelsäule Einzelregion
 
 dz_simmering:
   name: DZ Simmering
