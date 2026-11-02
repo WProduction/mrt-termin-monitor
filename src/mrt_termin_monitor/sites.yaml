@@ -317,6 +317,8 @@ diagnostikum_linz:
   untersuchungen:
     knie_rechts:
       code: mknr
+    lws:
+      code: mlws                          # Portal-Kürzel für „MRT der Lendenwirbelsäule“
 
 diagnostikum_graz_suedwest:
   name: Diagnostikum Graz Süd-West
